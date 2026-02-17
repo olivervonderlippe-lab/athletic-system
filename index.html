@@ -1,33 +1,449 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-<meta charset="UTF-8">
-<title>Athletik System</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f5f5f7;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:100vh;
-  margin:0;
-}
-.card{
-  background:white;
-  padding:40px;
-  border-radius:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.08);
-  text-align:center;
-}
-h1{margin:0 0 10px;}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Athletik System V10.1 – Calendar Core</title>
+  <style>
+    :root{
+      --bg:#f5f6f8;
+      --card:#ffffff;
+      --text:#0b0f1a;
+      --muted:#5b6577;
+      --line:#e6e8ee;
+      --accent:#0a84ff;
+      --danger:#ff3b30;
+      --shadow:0 10px 30px rgba(0,0,0,.06);
+      --radius:18px;
+      --pad:18px;
+      --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--font);
+      background:var(--bg);
+      color:var(--text);
+    }
+    .wrap{
+      max-width:860px;
+      margin:0 auto;
+      padding:28px 16px 40px;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size:40px;
+      letter-spacing:-.02em;
+    }
+    .sub{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.35;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:var(--pad);
+    }
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-end;
+    }
+    .field{
+      flex:1 1 260px;
+      min-width:240px;
+    }
+    label{
+      display:block;
+      font-size:13px;
+      color:var(--muted);
+      margin:6px 0 8px;
+    }
+    input[type="date"], select{
+      width:100%;
+      padding:14px 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      font-size:16px;
+      background:#fff;
+      color:var(--text);
+      outline:none;
+    }
+    input[type="date"]:focus, select:focus{
+      border-color:rgba(10,132,255,.35);
+      box-shadow:0 0 0 4px rgba(10,132,255,.10);
+    }
+    .btns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    button{
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--text);
+      padding:12px 14px;
+      border-radius:999px;
+      font-size:16px;
+      cursor:pointer;
+      transition:transform .02s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    button:active{transform:translateY(1px)}
+    .primary{
+      background:var(--text);
+      color:#fff;
+      border-color:var(--text);
+    }
+    .ghost{ background:transparent; }
+    .danger{
+      color:var(--danger);
+      border-color:rgba(255,59,48,.25);
+      background:rgba(255,59,48,.06);
+    }
+    .meta{
+      margin-top:14px;
+      padding-top:12px;
+      border-top:1px solid var(--line);
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:#f9fafc;
+      width:fit-content;
+      font-weight:600;
+    }
+    .pill small{
+      font-weight:600;
+      color:var(--muted);
+    }
+    .note{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .warn{
+      margin-top:10px;
+      padding:10px 12px;
+      border:1px dashed rgba(255,149,0,.45);
+      background:rgba(255,149,0,.08);
+      border-radius:14px;
+      color:#7a4a00;
+      font-size:13px;
+      display:none;
+    }
+    .mini{
+      margin-top:14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      padding:14px;
+      background:#fff;
+    }
+    .mini h2{
+      margin:0 0 8px;
+      font-size:16px;
+      letter-spacing:-.01em;
+    }
+    .mini p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .tiny{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:6px;
+    }
+  </style>
 </head>
 <body>
-<div class="card">
-  <h1>Athletik System V10</h1>
-  <p>Clean Setup funktioniert.</p>
-</div>
+  <div class="wrap">
+    <h1>Athletik System V10.1</h1>
+    <p class="sub">Calendar Core (stabil). Keine PWA, kein Service Worker, kein localStorage. Ziel: Woche &amp; Heute sauber und zuverlässig.</p>
+
+    <div class="card" id="app">
+      <div class="row">
+        <div class="field">
+          <label for="startDate">Startdatum (Montag)</label>
+          <input id="startDate" type="date" />
+        </div>
+
+        <div class="field">
+          <label for="weekSelect">Woche anzeigen</label>
+          <select id="weekSelect" disabled>
+            <option value="">Bitte Startdatum setzen</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="viewSelect">Ansicht (Mobile-Fokus)</label>
+          <select id="viewSelect">
+            <option value="week">Woche (alle Tage)</option>
+            <option value="day">Nur ein Tag (iPhone)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btns">
+        <button class="primary" id="applyBtn">Speichern &amp; Starten</button>
+        <button class="ghost" id="todayBtn">Heute</button>
+        <button class="ghost" id="reloadBtn">Neu laden</button>
+        <button class="danger" id="resetBtn">Reset</button>
+      </div>
+
+      <div class="warn" id="warnBox"></div>
+
+      <div class="meta">
+        <div class="pill"><small>Start:</small> <span id="startOut">—</span></div>
+        <div class="pill"><small>Heute:</small> <span id="todayOut">—</span></div>
+        <div class="pill"><small>Cycle-Woche:</small> <span id="cycleOut">—</span></div>
+      </div>
+
+      <div class="mini">
+        <h2>Status</h2>
+        <p id="statusLine">Bereit. Setze dein Startdatum (Montag) und drücke „Speichern &amp; Starten“.</p>
+        <div class="tiny" id="debugLine"></div>
+      </div>
+
+      <div class="note">
+        Stabilitäts-Regel: Render läuft auch ohne Daten. Wenn Startdatum fehlt, bleibt Woche deaktiviert — statt „leer/freezing“.
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+
+  const startDateEl = $("startDate");
+  const weekSelectEl = $("weekSelect");
+  const viewSelectEl = $("viewSelect");
+  const applyBtn = $("applyBtn");
+  const todayBtn = $("todayBtn");
+  const reloadBtn = $("reloadBtn");
+  const resetBtn = $("resetBtn");
+
+  const startOut = $("startOut");
+  const todayOut = $("todayOut");
+  const cycleOut = $("cycleOut");
+  const statusLine = $("statusLine");
+  const debugLine = $("debugLine");
+  const warnBox = $("warnBox");
+
+  function fmtDateISO(d){
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+  function fmtDateDE(d){
+    const day = String(d.getDate()).padStart(2,"0");
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const y = d.getFullYear();
+    return `${day}.${m}.${y}`;
+  }
+  function parseISODate(val){
+    if(!val || typeof val !== "string") return null;
+    const parts = val.split("-");
+    if(parts.length !== 3) return null;
+    const y = Number(parts[0]), m = Number(parts[1]), d = Number(parts[2]);
+    if(!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) return null;
+    const date = new Date(Date.UTC(y, m-1, d, 12, 0, 0));
+    if(date.getUTCFullYear() !== y || (date.getUTCMonth()+1) !== m || date.getUTCDate() !== d) return null;
+    return date;
+  }
+  function daysBetweenUTC(aUTC, bUTC){
+    const ms = bUTC.getTime() - aUTC.getTime();
+    return Math.floor(ms / (24*60*60*1000));
+  }
+  function isMondayUTC(dateUTC){ return dateUTC.getUTCDay() === 1; }
+
+  const model = { startUTC:null, selectedWeek:null, view:"week" };
+
+  const weekLabels = [
+    { n:1, label:"Woche 1 (Aufbau)"},
+    { n:2, label:"Woche 2 (Aufbau)"},
+    { n:3, label:"Woche 3 (Aufbau)"},
+    { n:4, label:"Woche 4 (Deload)"},
+    { n:5, label:"Woche 5 (Aufbau)"},
+    { n:6, label:"Woche 6 (Aufbau)"},
+    { n:7, label:"Woche 7 (Aufbau)"},
+    { n:8, label:"Woche 8 (Deload)"},
+    { n:9, label:"Woche 9 (Aufbau)"},
+    { n:10,label:"Woche 10 (Aufbau)"},
+    { n:11,label:"Woche 11 (Aufbau)"},
+    { n:12,label:"Woche 12 (Deload)"}
+  ];
+
+  function setWarn(msg){
+    if(!msg){
+      warnBox.style.display = "none";
+      warnBox.textContent = "";
+      return;
+    }
+    warnBox.style.display = "block";
+    warnBox.textContent = msg;
+  }
+
+  function rebuildWeekSelect(){
+    weekSelectEl.innerHTML = "";
+    if(!model.startUTC){
+      weekSelectEl.disabled = true;
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "Bitte Startdatum setzen";
+      weekSelectEl.appendChild(opt);
+      return;
+    }
+    weekSelectEl.disabled = false;
+    for(const w of weekLabels){
+      const opt = document.createElement("option");
+      opt.value = String(w.n);
+      opt.textContent = w.label;
+      weekSelectEl.appendChild(opt);
+    }
+    weekSelectEl.value = String(model.selectedWeek ?? 1);
+  }
+
+  function computeCycleWeekFromToday(){
+    if(!model.startUTC) return null;
+    const now = new Date();
+    const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0));
+    const delta = daysBetweenUTC(model.startUTC, todayUTC);
+    if(delta < 0) return { kind:"before", week:null, delta };
+    const week = Math.floor(delta/7) + 1;
+    if(week < 1) return { kind:"before", week:null, delta };
+    if(week > 12) return { kind:"after", week, delta };
+    return { kind:"in", week, delta };
+  }
+
+  function render(){
+    const now = new Date();
+    const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0));
+    todayOut.textContent = fmtDateDE(new Date(todayUTC.getTime()));
+
+    if(!model.startUTC){
+      startOut.textContent = "—";
+      cycleOut.textContent = "—";
+      statusLine.textContent = "Bereit. Setze dein Startdatum (Montag) und drücke „Speichern & Starten“.";
+      debugLine.textContent = "";
+      setWarn("");
+      rebuildWeekSelect();
+      return;
+    }
+
+    startOut.textContent = fmtDateDE(new Date(model.startUTC.getTime()));
+
+    const cw = computeCycleWeekFromToday();
+    if(!cw){
+      cycleOut.textContent = "—";
+      setWarn("Startdatum gesetzt, aber Cycle-Woche konnte nicht berechnet werden.");
+    } else if(cw.kind === "before"){
+      cycleOut.textContent = "—";
+      setWarn("Hinweis: Startdatum liegt in der Zukunft. „Heute“ zeigt weiterhin korrekt das heutige Datum.");
+    } else if(cw.kind === "after"){
+      cycleOut.textContent = `Woche ${cw.week}/12 (nach Plan)`;
+      setWarn("Hinweis: Du bist kalenderbasiert nach Woche 12. (V10.2: Review/Reset-Logik.)");
+    } else {
+      cycleOut.textContent = `Woche ${cw.week}/12`;
+      setWarn("");
+    }
+
+    rebuildWeekSelect();
+
+    const selected = Number(weekSelectEl.value || model.selectedWeek || 1);
+    model.selectedWeek = Number.isFinite(selected) ? selected : 1;
+
+    const selectedLabel = weekLabels.find(w => w.n === model.selectedWeek)?.label ?? `Woche ${model.selectedWeek}`;
+    statusLine.textContent = `OK. Anzeige: ${selectedLabel} · Ansicht: ${model.view === "day" ? "Nur ein Tag" : "Woche (alle Tage)"}.`;
+    debugLine.textContent = `Debug: startISO=${fmtDateISO(new Date(model.startUTC.getTime()))} · selectedWeek=${model.selectedWeek} · view=${model.view}`;
+  }
+
+  function applyStartDate(){
+    const raw = startDateEl.value;
+    const parsed = parseISODate(raw);
+    if(!parsed){
+      model.startUTC = null;
+      model.selectedWeek = null;
+      setWarn("Bitte ein gültiges Datum wählen.");
+      render();
+      return;
+    }
+    model.startUTC = parsed;
+    model.selectedWeek = 1;
+    if(!isMondayUTC(parsed)){
+      setWarn("Das gewählte Startdatum ist kein Montag. Für saubere Wochenlogik: Montag wählen.");
+    } else {
+      setWarn("");
+    }
+    render();
+  }
+
+  applyBtn.addEventListener("click", (e)=>{ e.preventDefault(); applyStartDate(); });
+
+  todayBtn.addEventListener("click", (e)=>{
+    e.preventDefault();
+    if(!model.startUTC){
+      setWarn("Setze zuerst ein Startdatum, dann kann „Heute“ die Cycle-Woche bestimmen.");
+      render();
+      return;
+    }
+    const cw = computeCycleWeekFromToday();
+    if(cw && cw.kind === "in" && cw.week){
+      model.selectedWeek = cw.week;
+      weekSelectEl.value = String(cw.week);
+      setWarn("");
+    } else if(cw && cw.kind === "before"){
+      setWarn("Startdatum liegt in der Zukunft — keine aktuelle Cycle-Woche.");
+    } else if(cw && cw.kind === "after"){
+      model.selectedWeek = 12;
+      weekSelectEl.value = "12";
+      setWarn("Nach Woche 12 — aktuell auf Woche 12 gesetzt (V10.2: Review/Reset).");
+    }
+    render();
+  });
+
+  reloadBtn.addEventListener("click", (e)=>{ e.preventDefault(); location.reload(); });
+
+  resetBtn.addEventListener("click", (e)=>{
+    e.preventDefault();
+    model.startUTC = null;
+    model.selectedWeek = null;
+    model.view = "week";
+    startDateEl.value = "";
+    viewSelectEl.value = "week";
+    setWarn("");
+    render();
+  });
+
+  weekSelectEl.addEventListener("change", ()=>{
+    const v = Number(weekSelectEl.value);
+    model.selectedWeek = Number.isFinite(v) ? v : 1;
+    render();
+  });
+
+  viewSelectEl.addEventListener("change", ()=>{
+    model.view = viewSelectEl.value === "day" ? "day" : "week";
+    render();
+  });
+
+  render();
+})();
+</script>
 </body>
 </html>
