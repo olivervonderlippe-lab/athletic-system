@@ -3,220 +3,236 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Athletik System V10.1 – Calendar Core</title>
+  <title>Athletik System V10.2</title>
   <style>
     :root{
       --bg:#f5f6f8;
       --card:#ffffff;
-      --text:#0b0f1a;
-      --muted:#5b6577;
-      --line:#e6e8ee;
-      --accent:#0a84ff;
-      --danger:#ff3b30;
-      --shadow:0 10px 30px rgba(0,0,0,.06);
-      --radius:18px;
-      --pad:18px;
-      --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      --text:#0b0f18;
+      --muted:#5b6472;
+      --border:#e6e8ee;
+      --shadow: 0 12px 40px rgba(11,15,24,.08);
+      --primary:#0b0f18;
+      --accent:#2f6fed;
+      --danger:#e64b3c;
+      --pill:#eef2ff;
+      --pilltext:#2743a8;
+      --radius:20px;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:var(--font);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       background:var(--bg);
       color:var(--text);
     }
     .wrap{
-      max-width:860px;
-      margin:0 auto;
-      padding:28px 16px 40px;
+      max-width: 980px;
+      margin: 44px auto;
+      padding: 0 18px;
     }
     h1{
-      margin:0 0 6px;
-      font-size:40px;
-      letter-spacing:-.02em;
+      font-size: 54px;
+      line-height: 1.05;
+      margin: 0 0 10px;
+      letter-spacing: -0.02em;
     }
     .sub{
-      margin:0 0 18px;
-      color:var(--muted);
-      font-size:15px;
-      line-height:1.35;
+      font-size: 18px;
+      color: var(--muted);
+      margin: 0 0 22px;
     }
     .card{
       background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:var(--pad);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
     }
-    .row{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:flex-end;
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
-    .field{
-      flex:1 1 260px;
-      min-width:240px;
+    @media (max-width: 760px){
+      .wrap{margin: 22px auto}
+      h1{font-size: 38px}
+      .grid{grid-template-columns: 1fr}
     }
     label{
       display:block;
-      font-size:13px;
-      color:var(--muted);
-      margin:6px 0 8px;
+      font-size: 14px;
+      color: var(--muted);
+      margin: 4px 0 8px;
     }
     input[type="date"], select{
       width:100%;
-      padding:14px 14px;
-      border:1px solid var(--line);
-      border-radius:14px;
-      font-size:16px;
-      background:#fff;
-      color:var(--text);
+      padding: 14px 14px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      font-size: 18px;
       outline:none;
+      background:#fff;
     }
-    input[type="date"]:focus, select:focus{
-      border-color:rgba(10,132,255,.35);
-      box-shadow:0 0 0 4px rgba(10,132,255,.10);
+    input[type="date"][disabled], select[disabled]{
+      opacity: .6;
+      background:#f3f4f7;
     }
-    .btns{
+    .row{
       display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:12px;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+      align-items:center;
     }
     button{
-      border:1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-size: 17px;
+      border: 1px solid var(--border);
       background:#fff;
-      color:var(--text);
-      padding:12px 14px;
-      border-radius:999px;
-      font-size:16px;
       cursor:pointer;
-      transition:transform .02s ease, box-shadow .15s ease, border-color .15s ease;
+      transition: transform .02s ease, box-shadow .2s ease;
     }
-    button:active{transform:translateY(1px)}
+    button:active{transform: translateY(1px)}
     .primary{
-      background:var(--text);
+      background: var(--primary);
       color:#fff;
-      border-color:var(--text);
+      border-color: var(--primary);
+      padding: 14px 18px;
+      font-weight: 600;
     }
-    .ghost{ background:transparent; }
+    .ghost{
+      background:#fff;
+      color: var(--accent);
+      border-color: #dfe6ff;
+      font-weight: 600;
+    }
     .danger{
-      color:var(--danger);
-      border-color:rgba(255,59,48,.25);
-      background:rgba(255,59,48,.06);
+      background: #fff5f4;
+      color: var(--danger);
+      border-color: #ffd1cb;
+      font-weight: 700;
     }
-    .meta{
-      margin-top:14px;
-      padding-top:12px;
-      border-top:1px solid var(--line);
-      display:grid;
-      grid-template-columns:1fr;
-      gap:8px;
+    .divider{
+      height:1px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+    .pills{
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 360px;
+      margin-top: 10px;
     }
     .pill{
       display:inline-flex;
       align-items:center;
-      gap:8px;
-      padding:10px 12px;
-      border:1px solid var(--line);
-      border-radius:999px;
-      background:#f9fafc;
-      width:fit-content;
-      font-weight:600;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--pill);
+      color: var(--pilltext);
+      border: 1px solid #dfe6ff;
+      font-weight: 700;
+      width: fit-content;
+      max-width: 100%;
     }
-    .pill small{
-      font-weight:600;
-      color:var(--muted);
+    .pill span{font-weight: 600; color:#22315f}
+    .status{
+      margin-top: 14px;
+      padding: 14px 14px;
+      border-radius: 16px;
+      border:1px solid var(--border);
+      background:#fbfbfd;
     }
+    .status h3{margin:0 0 6px; font-size:18px}
+    .status p{margin:0; color:var(--muted); line-height:1.35}
     .note{
-      margin-top:12px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--muted);
     }
-    .warn{
-      margin-top:10px;
-      padding:10px 12px;
-      border:1px dashed rgba(255,149,0,.45);
-      background:rgba(255,149,0,.08);
-      border-radius:14px;
-      color:#7a4a00;
-      font-size:13px;
-      display:none;
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(11,15,24,.92);
+      color:#fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
     }
-    .mini{
-      margin-top:14px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      padding:14px;
-      background:#fff;
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
     }
-    .mini h2{
-      margin:0 0 8px;
-      font-size:16px;
-      letter-spacing:-.01em;
-    }
-    .mini p{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
-    }
-    .tiny{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:6px;
+    .debug{
+      margin-top: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      color:#7a8291;
+      word-break: break-word;
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <h1>Athletik System V10.1</h1>
-    <p class="sub">Calendar Core (stabil). Keine PWA, kein Service Worker, kein localStorage. Ziel: Woche &amp; Heute sauber und zuverlässig.</p>
+    <h1>Athletik System V10.2</h1>
+    <p class="sub">
+      Calendar Core (stabil). <b>Timezone-sicher</b>, <b>Montag-Guard</b>, Startdatum nur via <b>Reset</b> änderbar.
+      Keine PWA, kein Service Worker, kein localStorage.
+    </p>
 
-    <div class="card" id="app">
-      <div class="row">
-        <div class="field">
+    <div class="card">
+      <div class="grid">
+        <div>
           <label for="startDate">Startdatum (Montag)</label>
           <input id="startDate" type="date" />
+          <div class="note" id="startHint">Tipp: Nach „Speichern &amp; Starten“ ist das Startdatum gesperrt (nur Reset ändert es).</div>
         </div>
-
-        <div class="field">
+        <div>
           <label for="weekSelect">Woche anzeigen</label>
           <select id="weekSelect" disabled>
             <option value="">Bitte Startdatum setzen</option>
           </select>
         </div>
-
-        <div class="field">
-          <label for="viewSelect">Ansicht (Mobile-Fokus)</label>
-          <select id="viewSelect">
-            <option value="week">Woche (alle Tage)</option>
-            <option value="day">Nur ein Tag (iPhone)</option>
-          </select>
-        </div>
       </div>
 
-      <div class="btns">
-        <button class="primary" id="applyBtn">Speichern &amp; Starten</button>
-        <button class="ghost" id="todayBtn">Heute</button>
-        <button class="ghost" id="reloadBtn">Neu laden</button>
-        <button class="danger" id="resetBtn">Reset</button>
+      <div style="margin-top: 14px;">
+        <label for="viewSelect">Ansicht (Mobile-Fokus)</label>
+        <select id="viewSelect">
+          <option value="week">Woche (alle Tage)</option>
+          <option value="today">Nur Heute</option>
+        </select>
       </div>
 
-      <div class="warn" id="warnBox"></div>
-
-      <div class="meta">
-        <div class="pill"><small>Start:</small> <span id="startOut">—</span></div>
-        <div class="pill"><small>Heute:</small> <span id="todayOut">—</span></div>
-        <div class="pill"><small>Cycle-Woche:</small> <span id="cycleOut">—</span></div>
+      <div class="row">
+        <button class="primary" id="btnStart">Speichern &amp; Starten</button>
+        <button class="ghost" id="btnToday">Heute</button>
+        <button id="btnReload">Neu laden</button>
+        <button class="danger" id="btnReset">Reset</button>
       </div>
 
-      <div class="mini">
-        <h2>Status</h2>
-        <p id="statusLine">Bereit. Setze dein Startdatum (Montag) und drücke „Speichern &amp; Starten“.</p>
-        <div class="tiny" id="debugLine"></div>
+      <div class="divider"></div>
+
+      <div class="pills">
+        <div class="pill">Start: <span id="pillStart">—</span></div>
+        <div class="pill">Heute: <span id="pillToday">—</span></div>
+        <div class="pill">Cycle-Woche: <span id="pillCycle">—</span></div>
+      </div>
+
+      <div class="status" id="statusBox">
+        <h3>Status</h3>
+        <p id="statusText">Bereit. Setze dein Startdatum (Montag) und drücke „Speichern &amp; Starten“.</p>
+        <div class="debug" id="debugText"></div>
       </div>
 
       <div class="note">
@@ -225,225 +241,242 @@
     </div>
   </div>
 
+  <div class="toast" id="toast"></div>
+
 <script>
-(function(){
-  "use strict";
   const $ = (id) => document.getElementById(id);
 
   const startDateEl = $("startDate");
   const weekSelectEl = $("weekSelect");
   const viewSelectEl = $("viewSelect");
-  const applyBtn = $("applyBtn");
-  const todayBtn = $("todayBtn");
-  const reloadBtn = $("reloadBtn");
-  const resetBtn = $("resetBtn");
 
-  const startOut = $("startOut");
-  const todayOut = $("todayOut");
-  const cycleOut = $("cycleOut");
-  const statusLine = $("statusLine");
-  const debugLine = $("debugLine");
-  const warnBox = $("warnBox");
+  const pillStart = $("pillStart");
+  const pillToday = $("pillToday");
+  const pillCycle = $("pillCycle");
 
-  function fmtDateISO(d){
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,"0");
-    const day = String(d.getDate()).padStart(2,"0");
-    return `${y}-${m}-${day}`;
-  }
-  function fmtDateDE(d){
-    const day = String(d.getDate()).padStart(2,"0");
-    const m = String(d.getMonth()+1).padStart(2,"0");
-    const y = d.getFullYear();
-    return `${day}.${m}.${y}`;
-  }
-  function parseISODate(val){
-    if(!val || typeof val !== "string") return null;
-    const parts = val.split("-");
-    if(parts.length !== 3) return null;
-    const y = Number(parts[0]), m = Number(parts[1]), d = Number(parts[2]);
-    if(!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) return null;
-    const date = new Date(Date.UTC(y, m-1, d, 12, 0, 0));
-    if(date.getUTCFullYear() !== y || (date.getUTCMonth()+1) !== m || date.getUTCDate() !== d) return null;
-    return date;
-  }
-  function daysBetweenUTC(aUTC, bUTC){
-    const ms = bUTC.getTime() - aUTC.getTime();
-    return Math.floor(ms / (24*60*60*1000));
-  }
-  function isMondayUTC(dateUTC){ return dateUTC.getUTCDay() === 1; }
+  const statusText = $("statusText");
+  const debugText = $("debugText");
+  const toastEl = $("toast");
+  const startHint = $("startHint");
 
-  const model = { startUTC:null, selectedWeek:null, view:"week" };
+  const btnStart = $("btnStart");
+  const btnToday = $("btnToday");
+  const btnReload = $("btnReload");
+  const btnReset = $("btnReset");
+
+  // In-memory state (kein localStorage!)
+  const state = {
+    startISO: "",
+    lockedStart: false,
+    selectedWeekIndex: 1,
+    view: "week"
+  };
 
   const weekLabels = [
-    { n:1, label:"Woche 1 (Aufbau)"},
-    { n:2, label:"Woche 2 (Aufbau)"},
-    { n:3, label:"Woche 3 (Aufbau)"},
-    { n:4, label:"Woche 4 (Deload)"},
-    { n:5, label:"Woche 5 (Aufbau)"},
-    { n:6, label:"Woche 6 (Aufbau)"},
-    { n:7, label:"Woche 7 (Aufbau)"},
-    { n:8, label:"Woche 8 (Deload)"},
-    { n:9, label:"Woche 9 (Aufbau)"},
-    { n:10,label:"Woche 10 (Aufbau)"},
-    { n:11,label:"Woche 11 (Aufbau)"},
-    { n:12,label:"Woche 12 (Deload)"}
+    {i:1, label:"Woche 1 (Aufbau)"},
+    {i:2, label:"Woche 2 (Aufbau)"},
+    {i:3, label:"Woche 3 (Aufbau)"},
+    {i:4, label:"Woche 4 (Deload)"},
+    {i:5, label:"Woche 5 (Aufbau)"},
+    {i:6, label:"Woche 6 (Aufbau)"},
+    {i:7, label:"Woche 7 (Aufbau)"},
+    {i:8, label:"Woche 8 (Deload)"},
+    {i:9, label:"Woche 9 (Aufbau)"},
+    {i:10,label:"Woche 10 (Aufbau)"},
+    {i:11,label:"Woche 11 (Aufbau)"},
+    {i:12,label:"Woche 12 (Review & Reset)"}
   ];
 
-  function setWarn(msg){
-    if(!msg){
-      warnBox.style.display = "none";
-      warnBox.textContent = "";
-      return;
-    }
-    warnBox.style.display = "block";
-    warnBox.textContent = msg;
+  function pad(n){ return String(n).padStart(2,"0"); }
+
+  function toISODateLocal(d){
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
   }
 
-  function rebuildWeekSelect(){
+  function parseISOToLocalNoon(iso){
+    const [y,m,dd] = iso.split("-").map(Number);
+    return new Date(y, (m-1), dd, 12, 0, 0, 0);
+  }
+
+  function mondayOfISO(iso){
+    const d = parseISOToLocalNoon(iso);
+    const day = d.getDay(); // 0..6
+    const deltaToMonday = (day === 0) ? -6 : (1 - day);
+    d.setDate(d.getDate() + deltaToMonday);
+    return toISODateLocal(d);
+  }
+
+  function isMondayISO(iso){
+    return parseISOToLocalNoon(iso).getDay() === 1;
+  }
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(()=>toastEl.classList.remove("show"), 2400);
+  }
+
+  function fmtDE(iso){
+    if(!iso) return "—";
+    const d = parseISOToLocalNoon(iso);
+    return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`;
+  }
+
+  function calcCycleWeekIndex(startISO, todayISO){
+    const s = parseISOToLocalNoon(startISO);
+    const t = parseISOToLocalNoon(todayISO);
+    const diffDays = Math.floor((t - s) / (1000*60*60*24));
+    const week = Math.floor(diffDays / 7) + 1;
+    if (week < 1) return 1;
+    return Math.min(12, week);
+  }
+
+  function buildWeekSelect(){
     weekSelectEl.innerHTML = "";
-    if(!model.startUTC){
+    if(!state.startISO){
       weekSelectEl.disabled = true;
-      const opt = document.createElement("option");
-      opt.value = "";
-      opt.textContent = "Bitte Startdatum setzen";
-      weekSelectEl.appendChild(opt);
+      weekSelectEl.innerHTML = `<option value="">Bitte Startdatum setzen</option>`;
       return;
     }
     weekSelectEl.disabled = false;
     for(const w of weekLabels){
       const opt = document.createElement("option");
-      opt.value = String(w.n);
+      opt.value = String(w.i);
       opt.textContent = w.label;
       weekSelectEl.appendChild(opt);
     }
-    weekSelectEl.value = String(model.selectedWeek ?? 1);
+    weekSelectEl.value = String(state.selectedWeekIndex);
   }
 
-  function computeCycleWeekFromToday(){
-    if(!model.startUTC) return null;
-    const now = new Date();
-    const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0));
-    const delta = daysBetweenUTC(model.startUTC, todayUTC);
-    if(delta < 0) return { kind:"before", week:null, delta };
-    const week = Math.floor(delta/7) + 1;
-    if(week < 1) return { kind:"before", week:null, delta };
-    if(week > 12) return { kind:"after", week, delta };
-    return { kind:"in", week, delta };
+  function lockStartInput(lock){
+    state.lockedStart = lock;
+    startDateEl.disabled = lock;
+    startHint.textContent = lock
+      ? "Startdatum ist gesperrt. Ändern nur via Reset."
+      : "Tipp: Nach „Speichern & Starten“ ist das Startdatum gesperrt (nur Reset ändert es).";
+  }
+
+  function actionStart(){
+    const raw = startDateEl.value;
+    if(!raw){
+      toast("Bitte ein Startdatum setzen.");
+      statusText.textContent = "Bitte Startdatum setzen (Montag).";
+      return;
+    }
+
+    let startISO = raw;
+    if(!isMondayISO(startISO)){
+      const corrected = mondayOfISO(startISO);
+      toast(`Startdatum war nicht Montag. Korrigiert auf Montag: ${fmtDE(corrected)}.`);
+      startISO = corrected;
+      startDateEl.value = corrected;
+    }
+
+    state.startISO = startISO;
+    state.selectedWeekIndex = 1;
+    buildWeekSelect();
+    lockStartInput(true);
+
+    statusText.textContent = `OK. Start gesetzt auf ${fmtDE(state.startISO)}. Woche-Auswahl aktiv.`;
+    render();
+  }
+
+  function actionToday(){
+    state.view = "today";
+    viewSelectEl.value = "today";
+    if(state.startISO){
+      const todayISO = toISODateLocal(new Date());
+      state.selectedWeekIndex = calcCycleWeekIndex(state.startISO, todayISO);
+      buildWeekSelect();
+      toast("Heute-Modus aktiv.");
+    } else {
+      toast("Heute-Modus aktiv (ohne Startdatum).");
+    }
+    render();
+  }
+
+  function actionReload(){
+    toast("Neu geladen.");
+    render();
+  }
+
+  function actionReset(){
+    state.startISO = "";
+    state.selectedWeekIndex = 1;
+    state.view = "week";
+    viewSelectEl.value = "week";
+    startDateEl.value = "";
+    lockStartInput(false);
+    buildWeekSelect();
+    statusText.textContent = "Reset: Startdatum gelöscht. Setze neu und starte.";
+    debugText.textContent = "";
+    render();
+    toast("Reset erledigt.");
   }
 
   function render(){
-    const now = new Date();
-    const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0));
-    todayOut.textContent = fmtDateDE(new Date(todayUTC.getTime()));
+    const todayISO = toISODateLocal(new Date());
+    pillToday.textContent = fmtDE(todayISO);
+    pillStart.textContent = state.startISO ? fmtDE(state.startISO) : "—";
+    pillCycle.textContent = state.startISO ? `Woche ${calcCycleWeekIndex(state.startISO, todayISO)}/12` : "—";
 
-    if(!model.startUTC){
-      startOut.textContent = "—";
-      cycleOut.textContent = "—";
-      statusLine.textContent = "Bereit. Setze dein Startdatum (Montag) und drücke „Speichern & Starten“.";
-      debugLine.textContent = "";
-      setWarn("");
-      rebuildWeekSelect();
-      return;
-    }
+    const dbg = [];
+    dbg.push(`startISO=${state.startISO || "—"}`);
+    dbg.push(`lockedStart=${state.lockedStart}`);
+    dbg.push(`selectedWeek=${state.selectedWeekIndex}`);
+    dbg.push(`view=${state.view}`);
+    dbg.push(`todayISO=${todayISO}`);
+    debugText.textContent = dbg.join(" · ");
 
-    startOut.textContent = fmtDateDE(new Date(model.startUTC.getTime()));
+    viewSelectEl.value = state.view;
 
-    const cw = computeCycleWeekFromToday();
-    if(!cw){
-      cycleOut.textContent = "—";
-      setWarn("Startdatum gesetzt, aber Cycle-Woche konnte nicht berechnet werden.");
-    } else if(cw.kind === "before"){
-      cycleOut.textContent = "—";
-      setWarn("Hinweis: Startdatum liegt in der Zukunft. „Heute“ zeigt weiterhin korrekt das heutige Datum.");
-    } else if(cw.kind === "after"){
-      cycleOut.textContent = `Woche ${cw.week}/12 (nach Plan)`;
-      setWarn("Hinweis: Du bist kalenderbasiert nach Woche 12. (V10.2: Review/Reset-Logik.)");
+    if(!state.startISO){
+      weekSelectEl.disabled = true;
+      if(weekSelectEl.options.length === 0){
+        weekSelectEl.innerHTML = `<option value="">Bitte Startdatum setzen</option>`;
+      }
     } else {
-      cycleOut.textContent = `Woche ${cw.week}/12`;
-      setWarn("");
+      if(weekSelectEl.options.length === 0 || weekSelectEl.disabled){
+        buildWeekSelect();
+      }
     }
-
-    rebuildWeekSelect();
-
-    const selected = Number(weekSelectEl.value || model.selectedWeek || 1);
-    model.selectedWeek = Number.isFinite(selected) ? selected : 1;
-
-    const selectedLabel = weekLabels.find(w => w.n === model.selectedWeek)?.label ?? `Woche ${model.selectedWeek}`;
-    statusLine.textContent = `OK. Anzeige: ${selectedLabel} · Ansicht: ${model.view === "day" ? "Nur ein Tag" : "Woche (alle Tage)"}.`;
-    debugLine.textContent = `Debug: startISO=${fmtDateISO(new Date(model.startUTC.getTime()))} · selectedWeek=${model.selectedWeek} · view=${model.view}`;
   }
 
-  function applyStartDate(){
+  btnStart.addEventListener("click", actionStart);
+  btnToday.addEventListener("click", actionToday);
+  btnReload.addEventListener("click", actionReload);
+  btnReset.addEventListener("click", actionReset);
+
+  startDateEl.addEventListener("change", () => {
+    if(state.lockedStart){
+      startDateEl.value = state.startISO;
+      toast("Startdatum ist gesperrt. Ändern nur via Reset.");
+      return;
+    }
     const raw = startDateEl.value;
-    const parsed = parseISODate(raw);
-    if(!parsed){
-      model.startUTC = null;
-      model.selectedWeek = null;
-      setWarn("Bitte ein gültiges Datum wählen.");
-      render();
-      return;
+    if(raw && !isMondayISO(raw)){
+      const corrected = mondayOfISO(raw);
+      statusText.textContent = `Hinweis: Das ist kein Montag. Beim Start wird automatisch auf ${fmtDE(corrected)} korrigiert.`;
+    } else if(raw){
+      statusText.textContent = "Startdatum gesetzt. Drücke „Speichern & Starten“.";
     }
-    model.startUTC = parsed;
-    model.selectedWeek = 1;
-    if(!isMondayUTC(parsed)){
-      setWarn("Das gewählte Startdatum ist kein Montag. Für saubere Wochenlogik: Montag wählen.");
-    } else {
-      setWarn("");
-    }
-    render();
-  }
-
-  applyBtn.addEventListener("click", (e)=>{ e.preventDefault(); applyStartDate(); });
-
-  todayBtn.addEventListener("click", (e)=>{
-    e.preventDefault();
-    if(!model.startUTC){
-      setWarn("Setze zuerst ein Startdatum, dann kann „Heute“ die Cycle-Woche bestimmen.");
-      render();
-      return;
-    }
-    const cw = computeCycleWeekFromToday();
-    if(cw && cw.kind === "in" && cw.week){
-      model.selectedWeek = cw.week;
-      weekSelectEl.value = String(cw.week);
-      setWarn("");
-    } else if(cw && cw.kind === "before"){
-      setWarn("Startdatum liegt in der Zukunft — keine aktuelle Cycle-Woche.");
-    } else if(cw && cw.kind === "after"){
-      model.selectedWeek = 12;
-      weekSelectEl.value = "12";
-      setWarn("Nach Woche 12 — aktuell auf Woche 12 gesetzt (V10.2: Review/Reset).");
-    }
-    render();
   });
 
-  reloadBtn.addEventListener("click", (e)=>{ e.preventDefault(); location.reload(); });
-
-  resetBtn.addEventListener("click", (e)=>{
-    e.preventDefault();
-    model.startUTC = null;
-    model.selectedWeek = null;
-    model.view = "week";
-    startDateEl.value = "";
+  weekSelectEl.addEventListener("change", () => {
+    const v = Number(weekSelectEl.value || 1);
+    state.selectedWeekIndex = Number.isFinite(v) ? v : 1;
+    state.view = "week";
     viewSelectEl.value = "week";
-    setWarn("");
     render();
   });
 
-  weekSelectEl.addEventListener("change", ()=>{
-    const v = Number(weekSelectEl.value);
-    model.selectedWeek = Number.isFinite(v) ? v : 1;
-    render();
-  });
-
-  viewSelectEl.addEventListener("change", ()=>{
-    model.view = viewSelectEl.value === "day" ? "day" : "week";
+  viewSelectEl.addEventListener("change", () => {
+    state.view = viewSelectEl.value;
     render();
   });
 
   render();
-})();
 </script>
 </body>
 </html>
