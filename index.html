@@ -1,1182 +1,702 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Athletik System V11</title>
-<style>
-  :root{
-    --bg:#f5f6f8;
-    --card:#ffffff;
-    --text:#0b0f18;
-    --muted:#5b6375;
-    --line:#e6e9ef;
-    --pill:#eef2ff;
-    --pillText:#203a93;
-    --btn:#0b0f18;
-    --btnText:#fff;
-    --btn2:#ffffff;
-    --btn2Text:#0b0f18;
-    --dangerBg:#fff3f3;
-    --danger:#b42318;
-    --accent:#3b82f6;
-    --shadow: 0 12px 40px rgba(15,23,42,.08);
-    --radius:22px;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-  }
-  .wrap{max-width:1080px;margin:0 auto;padding:22px 18px 60px}
-  h1{font-size:56px;line-height:1.02;margin:6px 0 6px;letter-spacing:-.02em}
-  .sub{color:var(--muted);font-size:18px;margin:0 0 18px}
-  .card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    padding:18px;
-  }
-  .grid{display:grid;gap:14px}
-  @media(min-width:900px){ .grid2{grid-template-columns: 1.15fr .85fr} }
-  label{display:block;font-size:14px;color:var(--muted);margin:2px 0 8px}
-  input, select, textarea{
-    width:100%;
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:12px 12px;
-    font-size:18px;
-    outline:none;
-    background:#fff;
-  }
-  input:disabled{background:#f1f3f6;color:#9aa3b2}
-  textarea{min-height:84px;font-size:16px}
-  .row{display:grid;gap:14px}
-  @media(min-width:900px){ .row2{grid-template-columns: 1fr 1fr} .row3{grid-template-columns: 1fr 1fr 1fr} }
-  .btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
-  .btn{
-    border-radius:999px;
-    padding:12px 16px;
-    border:1px solid var(--line);
-    background:var(--btn2);
-    color:var(--btn2Text);
-    font-weight:700;
-    font-size:16px;
-    cursor:pointer;
-    user-select:none;
-  }
-  .btn.primary{
-    background:var(--btn);
-    border-color:transparent;
-    color:var(--btnText);
-  }
-  .btn.ghost{background:#fff}
-  .btn.danger{
-    background:var(--dangerBg);
-    color:var(--danger);
-    border-color:#ffd7d7;
-  }
-  .btn:active{transform:translateY(1px)}
-  .pills{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 0}
-  .pill{
-    display:inline-flex;align-items:center;gap:8px;
-    padding:10px 12px;border-radius:999px;
-    background:var(--pill);color:var(--pillText);
-    border:1px solid rgba(59,130,246,.12);
-    font-weight:700;
-  }
-  .muted{color:var(--muted)}
-  .hr{height:1px;background:var(--line);margin:14px 0}
-  .sectionTitle{font-size:18px;font-weight:800;margin:0 0 8px}
-  .dayCard{
-    border:1px solid var(--line);
-    border-radius:18px;
-    background:#fff;
-    padding:14px;
-  }
-  .dayHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-  .dayName{font-size:20px;font-weight:900}
-  .tag{font-size:13px;font-weight:800;border:1px solid var(--line);padding:6px 10px;border-radius:999px;color:var(--muted);background:#fff}
-  .tag.today{color:#0f6; border-color:#c6f6d5; background:#f0fff4}
-  .tag.deload{color:#a16207;border-color:#fde68a;background:#fffbeb}
-  .liftRow{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-top:10px}
-  .liftMain{font-size:17px;font-weight:900}
-  .liftMeta{font-size:14px;color:var(--muted)}
-  .coachBox{
-    margin-top:10px;
-    border-radius:16px;
-    border:1px dashed #d7dcec;
-    background:#fbfcff;
-    padding:12px;
-  }
-  .coachHead{display:flex;justify-content:space-between;gap:10px;align-items:center}
-  .coachBadge{display:inline-flex;align-items:center;gap:8px;font-weight:900;color:#1f3a8a}
-  .dot{width:10px;height:10px;border-radius:999px;background:#fbbf24}
-  .small{font-size:13px;color:var(--muted);margin-top:6px}
-  .modalOverlay{
-    position:fixed;inset:0;background:rgba(2,6,23,.45);
-    display:none;align-items:center;justify-content:center;
-    padding:18px;
-  }
-  .modal{
-    width:min(860px, 100%);
-    background:#fff;border-radius:24px;border:1px solid var(--line);
-    box-shadow:0 30px 100px rgba(2,6,23,.25);
-    padding:16px;
-    max-height:88vh; overflow:auto;
-  }
-  .modalTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
-  .x{border:0;background:#fff;font-size:22px;cursor:pointer}
-  .hint{
-    padding:12px 14px;border-radius:16px;border:1px solid var(--line);
-    background:#fafafa;color:var(--muted);font-size:14px
-  }
-  .warn{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
-  .ok{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
-  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12.5px}
-.pbWrap{margin:12px 0 10px}
-.pbLabel{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted)}
-.pbLabel b{color:var(--text)}
-.pb{height:10px;border-radius:999px;background:#e9eef7;overflow:hidden;border:1px solid var(--line)}
-.pbFill{height:100%;background:linear-gradient(90deg, #60a5fa, #2563eb)}
-.skillGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:680px){
-  h1{font-size:40px}
-  .row3{grid-template-columns:1fr}
-  .skillGrid{grid-template-columns:1fr}
-  .pbLabel{flex-direction:column;align-items:flex-start}
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101828" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <title>Athletik System V9 (PWA)</title>
+  <style>
+    :root{
+      --bg:#F5F8FC;
+      --card:#FFFFFF;
+      --text:#0F172A;
+      --muted:#475569;
+      --line:#E5EAF2;
+      --shadow: 0 10px 30px rgba(15,23,42,.08);
+      --radius: 16px;
+      --blue:#3B82F6;
+      --orange:#F59E0B;
+      --purple:#8B5CF6;
+      --green:#22C55E;
+      --btn:#111827;
+      --btnText:#FFFFFF;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: linear-gradient(180deg, #EAF2FF 0%, var(--bg) 40%, var(--bg) 100%);
+      color:var(--text);
+    }
+    .wrap{max-width: 980px; margin: 0 auto; padding: 22px 16px 40px;}
+    header{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap}
+    h1{margin:0; font-size: 28px; letter-spacing:-.02em}
+    .meta{font-size:12px; color:var(--muted); text-align:right}
+    .topcard{
+      margin-top: 14px;
+      background: var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr 280px;
+      gap: 10px;
+      align-items:end;
+    }
+    @media (max-width: 860px){
+      .grid{grid-template-columns: 1fr}
+      .meta{width:100%; text-align:left}
+    }
+    label{display:block; font-size:12px; color:var(--muted); margin: 0 0 6px}
+    input[type="date"], select, input[type="text"], textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 12px;
+      font-size: 14px;
+      background:#fff;
+      color: var(--text);
+      outline: none;
+    }
+    textarea{min-height: 70px; resize: vertical}
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end}
+    .btn{
+      border:1px solid var(--line);
+      background:#fff;
+      padding: 11px 14px;
+      border-radius: 999px;
+      font-weight: 650;
+      font-size: 14px;
+      cursor:pointer;
+    }
+    .btn.primary{
+      border:none;
+      background: var(--btn);
+      color: var(--btnText);
+      padding: 12px 18px;
+    }
+    .btn.ghost{background:transparent}
+    .btn.warn{border-color:#f1c0c0; background:#fff5f5}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#F1F5FF;
+      color:#1E40AF;
+      font-size:12px;
+      font-weight:650;
+      border:1px solid #DCE7FF;
+      margin-top: 10px;
+    }
+    .notice{margin-top: 10px; font-size: 13px; color: var(--muted); line-height:1.4;}
+    .days{margin-top: 14px; display:flex; flex-direction:column; gap: 12px;}
+    .day{
+      background: var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .dayhead{
+      display:flex;
+      gap: 12px;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px;
+      cursor:pointer;
+    }
+    .dayhead .left{display:flex; align-items:center; gap: 12px; min-width:0}
+    .stripe{width: 7px; border-radius: 999px; height: 42px; flex:0 0 auto}
+    .title{min-width:0}
+    .title .t{font-size:16px; font-weight:800; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .title .s{font-size:12px; color:var(--muted); margin-top:2px}
+    .tags{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+    .tag{font-size:12px; color:var(--muted); background:#F8FAFC; border:1px solid var(--line); border-radius: 999px; padding: 5px 10px; font-weight:650}
+    .tag.today{color:#0B5; border-color:#B9F6D0; background:#ECFFF4}
+    .content{border-top:1px solid var(--line); padding: 14px; display:none;}
+    .day.open .content{display:block}
+    .block{
+      border:1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 12px;
+      background:#fff;
+    }
+    .blockhead{display:flex; align-items:baseline; justify-content:space-between; gap:10px}
+    .blockhead .h{font-weight:950; font-size:16px}
+    .blockhead .r{font-size:12px; color:var(--muted); font-weight:650}
+    .descbox{
+      margin-top:10px;
+      background:#F8FAFC;
+      border:1px dashed #D9E2F1;
+      border-radius: 12px;
+      padding: 10px;
+      color: #334155;
+      font-size: 13px;
+      line-height:1.35;
+      display:none;
+    }
+    .descbox.show{display:block}
+    .small{font-size:12px; color:var(--muted); margin-top:8px}
+    .split{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+    .divider{height:1px; background:var(--line); margin: 12px 0}
+    .footer{margin-top: 16px; font-size:12px; color:var(--muted)}
+    .install{
+      display:none;
+      margin-top:12px;
+      padding: 10px;
+      border-radius: 14px;
+      background: #ECFFF4;
+      border: 1px solid #B9F6D0;
+      color:#14532D;
+      font-size:13px;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .install.show{display:flex}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas; font-size: 12px;}
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Athletik System V11</h1>
-  <p class="sub"><b>Calendar + Coach (stabil)</b>. localStorage an, aber ohne Service Worker/PWA. Fokus: Woche/Heute zuverlässig + „Letzte Einheit nachtragen“.</p>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Athletik System <span class="mono">V9</span></h1>
+        <div class="notice">Installierbare PWA (iPhone), offlinefähig. Progress lokal gespeichert.</div>
+      </div>
+      <div class="meta">
+        <div><b>Start:</b> <span id="startLabel">—</span></div>
+        <div><b>Heute:</b> <span id="todayLabel">—</span></div>
+      </div>
+    </header>
 
-  <div class="card grid grid2">
-    <div>
-      <div class="row row2">
+    <div class="topcard">
+      <div class="grid">
         <div>
-          <label>Startdatum (Montag)</label>
+          <label for="startDate">Startdatum (Montag)</label>
           <input id="startDate" type="date" />
-          <div id="startLockHint" class="small muted" style="display:none;margin-top:6px;">Startdatum ist gesperrt. Ändern nur via <b>Reset</b> (damit nichts driftet).</div>
         </div>
         <div>
-          <label>Woche anzeigen</label>
+          <label for="weekSelect">Woche anzeigen</label>
           <select id="weekSelect"></select>
+        </div>
+        <div class="btnrow" style="justify-content:flex-start">
+          <button class="btn primary" id="saveStart">Speichern & Starten</button>
+          <button class="btn" id="todayBtn">Heute</button>
+          <button class="btn" id="reloadBtn">Neu laden</button>
+          <button class="btn warn" id="resetBtn">Reset</button>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px">
+        <div style="flex:1 1 220px">
+          <label for="viewSelect">Ansicht (Mobile-Fokus)</label>
+          <select id="viewSelect">
+            <option value="week">Woche (alle Tage)</option>
+            <option value="day">Nur ein Tag (iPhone)</option>
+          </select>
+        </div>
+        <div style="flex:2 1 360px">
+          <div class="pill" id="phasePill">Cycle-Woche —</div>
+          <div class="notice" id="phaseNote">—</div>
+        </div>
+      </div>
+
+      <div class="install" id="installBar">
+        <div><b>Installieren?</b> „Teilen“ → „Zum Home-Bildschirm“ (oder Button hier, falls verfügbar).</div>
+        <button class="btn primary" id="installBtn">Installieren</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="btnrow" style="justify-content:flex-start">
+        <button class="btn" id="exportBtn">Progress exportieren (JSON)</button>
+        <label class="btn ghost" style="border-style:dashed; cursor:pointer">
+          Progress importieren
+          <input id="importFile" type="file" accept="application/json" style="display:none" />
+        </label>
+        <span class="small">Export = Sicherheitsnetz. Import ergänzt/aktualisiert.</span>
+      </div>
+
+      <div class="footer" id="status">Bereit.</div>
+    </div>
+
+    <div class="days" id="days"></div>
+
+    <div class="footer">
+      <div><b>Video:</b> Links öffnen in neuem Tab. Falls „nicht verfügbar“ → Link ersetzen.</div>
+      <div style="margin-top:6px"><b>Offline:</b> Nach erster Nutzung wird alles gecached.</div>
+    </div>
+  </div>
+
+<script>
+const STORAGE_KEY = 'ath.v9.startDateISO';
+const UI_KEY = 'ath.v9.ui';
+const PREFIX = 'ath.v9.';
+
+const DAYS = [
+  { key:'mon', name:'Montag – Kraft A', stripe:'var(--blue)', tags:['Lower + Pull'], dur:'60–75 Min' },
+  { key:'tue', name:'Dienstag – Mobility + Handstand', stripe:'var(--orange)', tags:['Flow + Skill'], dur:'30–40 Min' },
+  { key:'wed', name:'Mittwoch – Frei / Spaziergang', stripe:'var(--green)', tags:['Recovery'], dur:'0–40 Min' },
+  { key:'thu', name:'Donnerstag – Attack', stripe:'var(--purple)', tags:['MetCon / Spaß'], dur:'45–60 Min' },
+  { key:'fri', name:'Freitag – Kraft B', stripe:'var(--blue)', tags:['Upper + Pull'], dur:'60–75 Min' },
+  { key:'sat', name:'Samstag – Rotationstag', stripe:'var(--orange)', tags:['Steph / Shapes / Barre'], dur:'moderat' },
+  { key:'sun', name:'Sonntag – Yoga oder Off', stripe:'var(--green)', tags:['Recovery'], dur:'optional' },
+];
+
+const WEEK_PHASES = [
+  { w:1, label:'Aufbau', note:'Volumen sauber aufbauen. Technik priorisieren.' },
+  { w:2, label:'Aufbau', note:'Volumen halten, 1 kleine Progression. Kein Ego.' },
+  { w:3, label:'Aufbau', note:'Letzte Aufbauwoche. Qualität > Gewicht.' },
+  { w:4, label:'Deload', note:'~80% Intensität. Technik & Erholung. Klimmzug leicht. Samstag nur Mobility, Attack moderat.' },
+  { w:5, label:'Intensivierung', note:'Wieder anziehen. Kleine Lastsprünge. RPE 7–8.' },
+  { w:6, label:'Intensivierung', note:'Kraft stabilisieren, Skill-Qualität erhöhen.' },
+  { w:7, label:'Intensivierung', note:'Stark bleiben. Keine Grind-Reps.' },
+  { w:8, label:'Deload', note:'~80%. Bewegungsqualität. Nervensystem runterfahren.' },
+  { w:9, label:'Skill-Fokus', note:'Klimmzug/Handstand: sauberer Output. Weniger Volumen, mehr Präzision.' },
+  { w:10, label:'Skill-Fokus', note:'Singles/kurze Holds. Technik = König.' },
+  { w:11, label:'Skill-Fokus', note:'Letzte harte Woche. Kein Chaos.' },
+  { w:12, label:'Deload + Test', note:'Deload + Mini-Tests (optional). Frisch bleiben.' },
+];
+
+function blk(id, title, right, type, options, def, desc, prescription, video){
+  return { id, title, right, type, options, def, desc, prescription, video,
+    selKey: PREFIX + 'sel.' + id,
+    progKey: PREFIX + 'prog.' + id,
+    linkKey: PREFIX + 'video.' + id
+  };
+}
+function defaultPlan(){
+  const plan = {};
+  plan.mon = [
+    blk('mon.hinge','1) Hauptlift – Hinge (4×5, RPE 7–8)','2 Reps im Tank','select',
+      ['Trap Bar Deadlift','Romanian Deadlift','Barbell Deadlift (technikstabil)'],
+      'Trap Bar Deadlift',
+      'Setup: Fußdruck, neutrale Wirbelsäule, Lat aktiv. Tempo kontrolliert runter, explosiv hoch.',
+      '4×5. Woche 1–3: +2,5–5 kg/Woche. Woche 4: Deload ~80%.',
+      'https://www.youtube.com/results?search_query=trap+bar+deadlift+coaching+form'
+    ),
+    blk('mon.uni','2) Unilateral Lower (3×6–8/Seite)','Alternative möglich','select',
+      ['Bulgarian Split Squat','Front Squat (3×5–6)','Step-Ups schwer'],
+      'Bulgarian Split Squat',
+      'ROM sauber, Knie folgt Zehen. Lieber 6 sauber als 8 krumm.',
+      '3×6–8/Seite.',
+      'https://www.youtube.com/results?search_query=bulgarian+split+squat+form+coaching'
+    ),
+    blk('mon.pull','3) Klimmzug-Block A (ca. 20 Min)','Holds + Exzentrik + Rows','list',
+      ['A) Dead Hang – 2×30–40s','B) Top Hold – 3×10–15s','C) 90° Hold – 3×10s','D) Exzentrisch – 3×4 (6s runter bis 90°)','E) Ring Rows – 3×8–10'],
+      null,
+      'Prinzip: Kontrolle statt Chaos. Schulter aktiv (Depression), Rippen unten.',
+      'A→E. Pausen 60–90s.',
+      'https://www.youtube.com/results?search_query=pull+up+scapular+activation+eccentric'
+    )
+  ];
+  plan.tue = [
+    blk('tue.mob','Mobility Block (15–20 Min)','', 'list',
+      ['90/90 Hip Flow – 2×8','Couch Stretch – 1–2 min/Seite','Thoracic Rotations – 2×8','Shoulder CARs – 2×5','Scapular Push-ups – 2×10'],
+      null,
+      'Flow ohne Eile. Atmung ruhig. Kein Dehnen ins Brennen.',
+      '15–20 Min.',
+      'https://www.youtube.com/results?search_query=shoulder+cars+thoracic+rotation+mobility'
+    ),
+    blk('tue.hs','Handstand Block (15 Min)','kein Muskelversagen', 'list',
+      ['Wall Facing Hold – 3×20–40s','Line Drill – 3×6–8','Kick-Ups – 5–10 Versuche'],
+      null,
+      'Wall-Facing: Bauch/Po an, Schulter aktiv, Blick leicht nach unten.',
+      '15 Min.',
+      'https://www.youtube.com/results?search_query=wall+facing+handstand+line+drill'
+    )
+  ];
+  plan.wed = [ blk('wed.rec','Optional: Spaziergang / Soft Mobility','20–40 Min','select',
+      ['Komplett frei','Spaziergang 20–40 Min','5 Min Hüfte/Schulter Mobility'],
+      'Spaziergang 20–40 Min',
+      'Wenn müde: komplett frei. Kein Extra-Stress.',
+      '',
+      'https://www.youtube.com/results?search_query=easy+hip+shoulder+mobility+5+minutes'
+  )];
+  plan.thu = [ blk('thu.attack','LES MILLS – BODYATTACK','', 'select',
+      ['Attack (voll)','Attack (moderat)','Alternative: Cardio 30–45 Min'],
+      'Attack (voll)',
+      'Cooldown: 5–10 Min Mobility.',
+      '45–60 Min.',
+      'https://www.youtube.com/results?search_query=post+workout+cooldown+mobility'
+  )];
+  plan.fri = [
+    blk('fri.push','1) Hauptlift – Push (4×6–8)','', 'select',
+      ['Bankdrücken','DB Press','Ring Push-ups (schwer)'],
+      'Bankdrücken',
+      'Schulterblätter hinten/unten. Kein Bouncen.',
+      '4×6–8.',
+      'https://www.youtube.com/results?search_query=bench+press+form+coaching'
+    ),
+    blk('fri.pull','2) Klimmzug-Block B','Progress: Band dünner oder 1 Rep mehr','select',
+      ['Band-Assist Pull-ups (4×3–5)','Exzentrisch komplett (2×3, 6–8s)','Dead Hang (2×30s)'],
+      'Band-Assist Pull-ups (4×3–5)',
+      'Fokus: saubere Schulter + Körperspannung.',
+      'Band → Exzentrik → Hang',
+      'https://www.youtube.com/results?search_query=band+assisted+pull+up+eccentric'
+    )
+  ];
+  plan.sat = [ blk('sat.rot','Rotationstag (moderat)','', 'select',
+      ['Steph Flow','LM Shapes','LM Barre','Mobility only (Deload-Woche)'],
+      'Steph Flow',
+      'Nicht alles jede Woche. Intensität moderat.',
+      '',
+      'https://www.youtube.com/results?search_query=full+body+mobility+flow+20+minutes'
+  )];
+  plan.sun = [ blk('sun.yoga','Yoga oder Off','', 'select',
+      ['Flow Yoga','Yin Yoga','Komplett Off'],
+      'Flow Yoga',
+      'Off ist eine Trainingsentscheidung.',
+      '',
+      'https://www.youtube.com/results?search_query=yin+yoga+full+body+45+minutes'
+  )];
+  return plan;
+}
+
+const $ = (id)=>document.getElementById(id);
+
+function isoToLocalDateInput(iso){
+  const d = new Date(iso);
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const da = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${da}`;
+}
+function mondayOf(date){
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = (day===0 ? -6 : 1-day);
+  d.setDate(d.getDate()+diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+function addDays(date, n){ const d = new Date(date); d.setDate(d.getDate()+n); return d; }
+function fmtDE(date){ return new Intl.DateTimeFormat('de-DE').format(new Date(date)); }
+function clamp(n,a,b){ return Math.max(a, Math.min(b, n)); }
+function setStatus(msg){ $('status').textContent = msg; }
+
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; $('installBar').classList.add('show'); });
+$('installBtn').addEventListener('click', async ()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; $('installBar').classList.remove('show'); });
+
+const PLAN = defaultPlan();
+let state = { startISO:null, week:1, view:'week', dayFocus:'mon' };
+
+function loadState(){
+  const startISO = localStorage.getItem(STORAGE_KEY);
+  const ui = localStorage.getItem(UI_KEY);
+  if(startISO) state.startISO = startISO;
+  if(ui){ try{ const o=JSON.parse(ui); state.week=o.week||state.week; state.view=o.view||state.view; state.dayFocus=o.dayFocus||state.dayFocus; }catch{} }
+}
+function saveUI(){ localStorage.setItem(UI_KEY, JSON.stringify({week: state.week, view: state.view, dayFocus: state.dayFocus})); }
+
+function cycleWeekFor(date){
+  if(!state.startISO) return 1;
+  const start = new Date(state.startISO);
+  const diffMs = date - start;
+  const diffDays = Math.floor(diffMs / (1000*60*60*24));
+  const w = Math.floor(diffDays / 7) + 1;
+  return clamp(w, 1, 12);
+}
+function dayKeyFor(date){
+  const dow = new Date(date).getDay();
+  return ['sun','mon','tue','wed','thu','fri','sat'][dow];
+}
+
+function buildWeekSelect(){
+  $('weekSelect').innerHTML='';
+  WEEK_PHASES.forEach(p=>{
+    const opt=document.createElement('option');
+    opt.value=String(p.w);
+    opt.textContent=`Woche ${p.w} (${p.label})`;
+    $('weekSelect').appendChild(opt);
+  });
+}
+function updatePhaseLabel(){
+  const p = WEEK_PHASES.find(x=>x.w===state.week) || WEEK_PHASES[0];
+  $('phasePill').textContent = `Cycle-Woche ${state.week}/12 · ${p.label}`;
+  $('phaseNote').textContent = p.note;
+}
+
+function escapeHtml(str){
+  return (str||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+}
+function escapeAttr(str){ return escapeHtml(str).replaceAll('"','&quot;'); }
+
+function renderDayBlocks(dayKey){
+  const wrap=document.createElement('div');
+  const blocks=PLAN[dayKey]||[];
+  blocks.forEach(b=>{
+    const card=document.createElement('div');
+    card.className='block';
+    const savedSel = localStorage.getItem(b.selKey) || b.def || (b.options ? b.options[0] : '');
+    const savedProg = localStorage.getItem(b.progKey) || '';
+    const savedLink = localStorage.getItem(b.linkKey) || b.video || '';
+
+    card.innerHTML = `
+      <div class="blockhead">
+        <div class="h">${escapeHtml(b.title)}</div>
+        <div class="r">${escapeHtml(b.right||'')}</div>
+      </div>
+      <div class="small">${escapeHtml(b.prescription||'')}</div>
+      <div class="split">
+        <button class="btn" data-action="toggleDesc">Beschreibung</button>
+      </div>
+      <div class="descbox" data-desc>${escapeHtml(b.desc||'').replaceAll('\\n','<br>')}</div>
+
+      ${b.type==='select' ? `
+        <div style="margin-top:10px">
+          <label>Auswahl</label>
+          <select data-sel>
+            ${b.options.map(o=>`<option ${o===savedSel?'selected':''}>${escapeHtml(o)}</option>`).join('')}
+          </select>
+          <div class="btnrow" style="justify-content:flex-start; margin-top:8px">
+            <button class="btn" data-action="saveSel">Auswahl speichern</button>
+          </div>
+        </div>
+      ` : `
+        <div style="margin-top:10px">
+          <label>Inhalt (Checkliste)</label>
+          <div class="descbox show" style="border-style:solid">
+            ${b.options.map(o=>`• ${escapeHtml(o)}`).join('<br>')}
+          </div>
+        </div>
+      `}
+
+      <div style="margin-top:10px">
+        <label>Progress / Notiz</label>
+        <textarea data-prog placeholder="z.B. 120 kg ×5 @RPE8 / Band: grün 4×4 / fühlt sich an: ...">${escapeHtml(savedProg)}</textarea>
+        <div class="btnrow" style="justify-content:flex-start; margin-top:8px">
+          <button class="btn primary" data-action="saveProg">Progress speichern</button>
         </div>
       </div>
 
       <div style="margin-top:10px">
-        <label>Ansicht (Mobile-Fokus)</label>
-        <select id="viewSelect">
-          <option value="week">Woche (alle Tage)</option>
-          <option value="day">Nur ein Tag (iPhone)</option>
-        </select>
-      </div>
-
-      <div class="btns">
-        <button class="btn primary" id="btnStart">Speichern & Starten</button>
-        <button class="btn" id="btnToday">Heute</button>
-        <button class="btn" id="btnReload">Neu laden</button>
-        <button class="btn danger" id="btnReset">Reset</button>
-        <button class="btn ghost" id="btnBackfill" style="margin-left:auto;border-color:#cbd5e1;">Letzte Einheit nachtragen</button>
-      </div>
-
-      <div class="pills">
-        <div class="pill"><span class="muted">Start:</span> <span id="pillStart">—</span></div>
-        <div class="pill"><span class="muted">Heute:</span> <span id="pillToday">—</span></div>
-        <div class="pill"><span class="muted">Cycle‑Woche:</span> <span id="pillCycle">—</span></div>
-        <div class="pill" id="pillDeload" style="display:none;background:#fffbeb;color:#92400e;border-color:#fde68a">Deload‑Woche</div>
-      </div>
-
-      <div class="hr"></div>
-      <div class="sectionTitle">Status</div>
-      <div id="status" class="hint">Bereit. Setze Startdatum (Montag) und drücke „Speichern & Starten“.</div>
-      <div id="debug" class="small mono muted" style="margin-top:10px;"></div>
-    </div>
-
-    <div>
-      <div class="sectionTitle">Coach‑Regeln (kompakt)</div>
-      <div class="hint">
-        <div><b>Hauptlift</b>: Du gibst <b>Startgewicht</b> einmal an. Danach: Woche→Woche automatisch.</div>
-        <div style="margin-top:6px"><b>Adaptive Kurve</b> (vereinfacht, robust):</div>
-        <div class="mono" style="margin-top:6px">
-          RPE ≤ 7 & Technik ok → +Inkrement<br>
-          RPE 8 → +½ Inkrement<br>
-          RPE ≥ 9 oder Technik wacklig → −½ Inkrement (oder halten)<br>
-          Deload‑Woche (4/8/12): −15% Last, −20% Volumen
+        <label>Video-Link (editierbar)</label>
+        <input type="text" data-link value="${escapeAttr(savedLink)}" />
+        <div class="btnrow" style="justify-content:flex-start; margin-top:8px">
+          <button class="btn" data-action="saveLink">Link speichern</button>
+          <button class="btn" data-action="openVideo">Video ansehen</button>
         </div>
       </div>
+    `;
 
-      <div class="hr"></div>
-      <div class="sectionTitle">Progress‑Sicherheitsnetz</div>
-      <div class="btns">
-        <button class="btn" id="btnExport">Export (JSON)</button>
-        <label class="btn" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;">
-          Import
-          <input id="importFile" type="file" accept="application/json" style="display:none" />
-        </label>
-      </div>
-      <div class="small muted">Tipp: Export nach Woche 1/2 einmal speichern. Dann ist selbst ein Browser‑Chaos egal.</div>
-    </div>
-  </div>
+    card.querySelector('[data-action="toggleDesc"]').addEventListener('click', ()=>{
+      card.querySelector('[data-desc]').classList.toggle('show');
+    });
+    const sel = card.querySelector('[data-sel]');
+    if(sel){
+      card.querySelector('[data-action="saveSel"]').addEventListener('click', ()=>{
+        localStorage.setItem(b.selKey, sel.value);
+        setStatus('Auswahl gespeichert.');
+      });
+    }
+    const prog = card.querySelector('[data-prog]');
+    card.querySelector('[data-action="saveProg"]').addEventListener('click', ()=>{
+      localStorage.setItem(b.progKey, prog.value);
+      setStatus('Progress gespeichert.');
+    });
+    const link = card.querySelector('[data-link]');
+    card.querySelector('[data-action="saveLink"]').addEventListener('click', ()=>{
+      localStorage.setItem(b.linkKey, link.value.trim());
+      setStatus('Link gespeichert.');
+    });
+    card.querySelector('[data-action="openVideo"]').addEventListener('click', ()=>{
+      const url=(link.value||'').trim();
+      if(!url){ alert('Kein Link gesetzt.'); return; }
+      window.open(url, '_blank', 'noopener,noreferrer');
+    });
 
-  <div style="height:14px"></div>
-  <div id="schedule" class="grid"></div>
-
-  <div style="margin-top:16px" class="small muted">
-    Stabilitäts‑Regel: Render läuft auch ohne Daten. Wenn Startdatum fehlt, bleibt Woche deaktiviert — statt „leer/freezing“.
-  </div>
-</div>
-
-<!-- Backfill Modal -->
-<div class="modalOverlay" id="modalOverlay" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true">
-    <div class="modalTop">
-      <div>
-        <div class="sectionTitle" style="margin:0">Letzte Einheit nachtragen</div>
-        <div class="small muted">Damit dein Coach nicht „bei null“ steht, wenn du schon angefangen hast.</div>
-      </div>
-      <button class="x" id="modalClose" aria-label="Schließen">✕</button>
-    </div>
-    <div class="hr"></div>
-
-    <div class="hint warn">
-      <b>Wichtig:</b> Trag nur ein, was du wirklich gemacht hast. Wenn du unsicher bist: lieber konservativ (geringeres Gewicht / höheres RPE).
-    </div>
-
-    <div style="height:12px"></div>
-
-    <div class="row row2">
-      <div>
-        <label>Welche Einheit war das?</label>
-        <select id="bfSession">
-          <option value="kraftA">Kraft A (Lower + Pull)</option>
-          <option value="kraftB">Kraft B (Upper + Pull)</option>
-        </select>
-      </div>
-      <div>
-        <label>In welcher Woche war das Log?</label>
-        <select id="bfWeek"></select>
-      </div>
-    </div>
-
-    <div style="height:10px"></div>
-    <div class="row row3">
-      <div>
-        <label>Hauptlift‑Gewicht (kg)</label>
-        <input id="bfWeight" inputmode="decimal" placeholder="z.B. 120" />
-      </div>
-      <div>
-        <label>RPE</label>
-        <select id="bfRpe">
-          <option>6</option><option selected>7</option><option>8</option><option>9</option><option>10</option>
-        </select>
-      </div>
-      <div>
-        <label>Technik</label>
-        <select id="bfTech">
-          <option value="ok" selected>OK (sauber)</option>
-          <option value="wacklig">Wacklig</option>
-          <option value="schlecht">Schlecht/Abbruch</option>
-        </select>
-      </div>
-    </div>
-
-    <div style="height:10px"></div>
-    <div class="row row2">
-      <div>
-        <label>Startgewicht (nur falls noch nicht gesetzt)</label>
-        <input id="bfStart" inputmode="decimal" placeholder="z.B. 120" />
-        <div class="small muted">Wenn schon gesetzt: Feld leer lassen.</div>
-      </div>
-      <div>
-        <label>Notiz (optional)</label>
-        <input id="bfNote" placeholder="z.B. krank gewesen / müde / Technik-Fokus" />
-      </div>
-    </div>
-
-    <div class="btns" style="margin-top:14px">
-      <button class="btn primary" id="bfSave">Nachtragen & Coach updaten</button>
-      <button class="btn" id="bfCancel">Abbrechen</button>
-    </div>
-
-    <div id="bfResult" class="hint ok" style="display:none;margin-top:12px"></div>
-  </div>
-</div>
-
-<script>
-/* ---------- TZ-safe date helpers ---------- */
-function isoFromYMD(ymd){ return ymd; } // ymd already YYYY-MM-DD
-function parseISO(iso){
-  // Create Date in local time safely: new Date(year, month-1, day)
-  const [y,m,d] = iso.split('-').map(Number);
-  return new Date(y, m-1, d, 12, 0, 0, 0); // midday avoids DST edge
-}
-function isoFromDateLocal(date){
-  const y = date.getFullYear();
-  const m = String(date.getMonth()+1).padStart(2,'0');
-  const d = String(date.getDate()).padStart(2,'0');
-  return `${y}-${m}-${d}`;
-}
-function addDaysISO(iso, days){
-  const dt = parseISO(iso);
-  dt.setDate(dt.getDate()+days);
-  return isoFromDateLocal(dt);
-}
-function diffDaysISO(aISO, bISO){
-  // b - a in days
-  const a = parseISO(aISO).getTime();
-  const b = parseISO(bISO).getTime();
-  return Math.round((b-a)/86400000);
-}
-function mondayGuard(iso){
-  const dt = parseISO(iso);
-  const day = dt.getDay(); // 0 sun ... 1 mon
-  if(day === 1) return iso;
-  // Shift back to Monday
-  const delta = (day === 0) ? 6 : (day-1);
-  dt.setDate(dt.getDate()-delta);
-  return isoFromDateLocal(dt);
+    wrap.appendChild(card);
+  });
+  return wrap;
 }
 
-/* ---------- State ---------- */
-const KEY = "athletik_v11_state";
-function defaultState(){
-  return {
-    version:"11.0",
-    lockedStart:false,
-    startISO:"",
-    selectedWeek:1,
-    view:"week",
-    lastViewDayISO:"",
-    coachingOn:true,
-    logs:{}, // by liftKey: { startWeight, increments, entries: [{week, weight, rpe, tech, note, tsISO}] }
-    exportMeta:{createdISO:"", updatedISO:""},
-    skills:{pullLevel:0, handLevel:1},
-  };
+function renderDays(){
+  const daysEl=$('days');
+  daysEl.innerHTML='';
+  let visibleDays=DAYS;
+  if(state.view==='day') visibleDays=DAYS.filter(d=>d.key===state.dayFocus);
+
+  const today=new Date();
+  const todayKey=dayKeyFor(today);
+  const todayWeek=cycleWeekFor(today);
+
+  visibleDays.forEach(d=>{
+    const day=document.createElement('div');
+    day.className='day';
+    day.dataset.key=d.key;
+
+    const isToday = (d.key===todayKey && state.week===todayWeek);
+    const head=document.createElement('div');
+    head.className='dayhead';
+    head.innerHTML=`
+      <div class="left">
+        <div class="stripe" style="background:${d.stripe}"></div>
+        <div class="title">
+          <div class="t">${d.name}</div>
+          <div class="s">Dauer: ${d.dur}</div>
+        </div>
+      </div>
+      <div class="tags">
+        ${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}
+        ${isToday?`<span class="tag today">Heute</span>`:''}
+        <span class="tag">›</span>
+      </div>
+    `;
+    head.addEventListener('click', ()=>{
+      const open=day.classList.contains('open');
+      document.querySelectorAll('.day').forEach(x=>x.classList.remove('open'));
+      if(!open) day.classList.add('open');
+      if(state.view==='day') day.classList.add('open');
+    });
+
+    const content=document.createElement('div');
+    content.className='content';
+    content.appendChild(renderDayBlocks(d.key));
+
+    day.appendChild(head);
+    day.appendChild(content);
+
+    if(state.view==='day') day.classList.add('open');
+    daysEl.appendChild(day);
+  });
 }
-function loadState(){
-  try{
-    const raw = localStorage.getItem(KEY);
-    if(!raw) return defaultState();
-    const s = JSON.parse(raw);
-    return {...defaultState(), ...s};
-  }catch(e){
-    return defaultState();
+
+function exportProgress(){
+  const data={};
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k && (k.startsWith(PREFIX) || k===STORAGE_KEY || k===UI_KEY)){
+      data[k]=localStorage.getItem(k);
+    }
   }
+  const blob=new Blob([JSON.stringify({version:'v9', exportedAt:new Date().toISOString(), data}, null, 2)], {type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`athletik-progress-v9-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  setStatus('Export erstellt.');
 }
-function saveState(){
-  state.exportMeta.updatedISO = isoFromDateLocal(new Date());
-  localStorage.setItem(KEY, JSON.stringify(state));
+async function importProgress(file){
+  const txt=await file.text();
+  let obj;
+  try{ obj=JSON.parse(txt); }catch{ alert('JSON konnte nicht gelesen werden.'); return; }
+  const data=obj.data||obj;
+  let count=0;
+  for(const [k,v] of Object.entries(data)){
+    if(typeof v!=='string') continue;
+    if(k.startsWith(PREFIX) || k===STORAGE_KEY || k===UI_KEY){
+      localStorage.setItem(k, v);
+      count++;
+    }
+  }
+  setStatus(`Import abgeschlossen (${count} Einträge).`);
+  initUI();
 }
 
-/* ---------- Plan (Calendar core) ---------- */
-const WEEKS = 12;
-const deloadWeeks = new Set([4,8,12]);
-const weekLabels = Array.from({length:WEEKS}, (_,i)=>{
-  const w=i+1;
-  const phase = deloadWeeks.has(w) ? "Deload" : (w<=3 ? "Aufbau" : (w<=7 ? "Aufbau" : (w<=11 ? "Aufbau" : "Deload")));
-  return {w, label:`Woche ${w} (${phase})`, deload: deloadWeeks.has(w)};
+$('saveStart').addEventListener('click', ()=>{
+  const val=$('startDate').value;
+  if(!val){ alert('Bitte Startdatum setzen (Montag).'); return; }
+  const d=mondayOf(new Date(val));
+  const iso=d.toISOString();
+  state.startISO=iso;
+  localStorage.setItem(STORAGE_KEY, iso);
+  setStatus('System aktiviert.');
+  initUI();
+});
+$('reloadBtn').addEventListener('click', ()=>{ initUI(); setStatus('Neu geladen.'); });
+$('resetBtn').addEventListener('click', ()=>{
+  if(!confirm('Reset löscht Startdatum & alle gespeicherten Daten. Wirklich?')) return;
+  const toDel=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k && (k.startsWith(PREFIX) || k===STORAGE_KEY || k===UI_KEY)) toDel.push(k);
+  }
+  toDel.forEach(k=>localStorage.removeItem(k));
+  state={startISO:null, week:1, view:'week', dayFocus:'mon'};
+  setStatus('Reset abgeschlossen.');
+  initUI();
+});
+$('weekSelect').addEventListener('change', ()=>{
+  state.week=Number($('weekSelect').value);
+  saveUI();
+  updatePhaseLabel();
+  renderDays();
+});
+$('viewSelect').addEventListener('change', ()=>{
+  state.view=$('viewSelect').value;
+  if(state.view==='day' && !state.dayFocus) state.dayFocus='mon';
+  saveUI();
+  renderDays();
+  setTimeout(()=>document.querySelector('.day')?.classList.add('open'), 0);
+});
+$('todayBtn').addEventListener('click', ()=>{
+  if(!state.startISO){ alert('Bitte zuerst Startdatum setzen und speichern.'); return; }
+  const today=new Date();
+  state.week=cycleWeekFor(today);
+  state.dayFocus=dayKeyFor(today);
+  state.view='day';
+  saveUI();
+  $('weekSelect').value=String(state.week);
+  $('viewSelect').value=state.view;
+  updatePhaseLabel();
+  renderDays();
+  setStatus('Heute fokussiert.');
+});
+$('exportBtn').addEventListener('click', exportProgress);
+$('importFile').addEventListener('change', async (e)=>{
+  const f=e.target.files && e.target.files[0];
+  if(!f) return;
+  await importProgress(f);
+  e.target.value='';
 });
 
-// Minimal, but real: 2 strength days + optional skill days (no coach calc here)
-const TEMPLATE = {
-  kraftA:{
-    title:"Montag – Kraft A",
-    tag:"Lower + Pull",
-    mainLift:{ key:"hinge", name:"Hauptlift – Hinge (Deadlift)", prescription:"4×5 @RPE 7–8", inc:2.5 },
-    secondary:"Bulgarian Split Squat **oder** Front Squat (Technik/Volumen): 3×6–8 @RPE 7–8 (sauber, langsam)",
-    note:"Dauer: 60–75 Min"
-  },
-  kraftB:{
-    title:"Freitag – Kraft B",
-    tag:"Upper + Pull",
-    mainLift:{ key:"push", name:"Hauptlift – Push (Bankdrücken)", prescription:"4×6–8 @RPE 7–8", inc:2.5 },
-    secondary:"Row-Variante ODER Schulter/Press-Accessory (leicht): 3×10–12 @RPE 7",
-    note:"Dauer: 60–75 Min"
-  }
-};
-
-function dayScheduleForWeek(startISO, week){
-  // week starts at startISO + (week-1)*7
-  const weekStart = addDaysISO(startISO, (week-1)*7);
-  const days = [
-    {dow:"Montag",   iso:addDaysISO(weekStart,0), session:"kraftA"},
-    {dow:"Dienstag", iso:addDaysISO(weekStart,1), session:"skill"},
-    {dow:"Mittwoch", iso:addDaysISO(weekStart,2), session:"off"},
-    {dow:"Donnerstag",iso:addDaysISO(weekStart,3), session:"cardio"},
-    {dow:"Freitag",  iso:addDaysISO(weekStart,4), session:"kraftB"},
-    {dow:"Samstag",  iso:addDaysISO(weekStart,5), session:"rotation"},
-    {dow:"Sonntag",  iso:addDaysISO(weekStart,6), session:"recovery"},
-  ];
-  return {weekStart, days};
-}
-
-function sessionCardText(session){
-  switch(session){
-    case "skill": return {title:"Dienstag – Skill", tag:"Pull‑up + Handstand", note:"Kurz & sauber. Skills bewusst steuern.", details:"Pull‑up: Hängen + Scap + Band‑Top‑Hold + Ring Rows (unter deinem Ego‑Level). Handstand: Wall‑Facing Hold + Line Drill + Kick‑ups."};
-    case "off": return {title:"Mittwoch", tag:"frei / Spaziergang", note:"Komplett frei oder 20–40 Min gehen.", details:"Kein Extra‑Stress, wenn müde."};
-    case "cardio": return {title:"Donnerstag – Cardio", tag:"Attack / MetCon", note:"Moderate Einheit.", details:"RPE 6–7. Kein Overkill."};
-    case "rotation": return {title:"Samstag – Rotationstag", tag:"Steph / Shapes / Barre", note:"Moderate Einheit.", details:"Fokus: Spaß + Bewegungsqualität."};
-    case "recovery": return {title:"Sonntag – Yoga oder Off", tag:"Recovery", note:"Optional.", details:"Wenn du platt bist: off."};
-    default: return null;
+async function registerSW(){
+  if('serviceWorker' in navigator){
+    try{ await navigator.serviceWorker.register('./sw.js'); }
+    catch(e){ console.log('SW fail', e); }
   }
 }
 
-/* ---------- Coach ---------- */
-function liftKey(sessionKey){
-  const lift = TEMPLATE[sessionKey].mainLift;
-  return `${sessionKey}:${lift.key}`;
-}
-function getLiftState(sessionKey){
-  const k = liftKey(sessionKey);
-  if(!state.logs[k]){
-    state.logs[k] = {startWeight:null, inc:TEMPLATE[sessionKey].mainLift.inc, entries:[]};
-  }
-  return state.logs[k];
-}
-function plannedWeightForWeek(sessionKey, week){
-  const ls = getLiftState(sessionKey);
-  if(ls.startWeight == null) return null;
+function initUI(){
+  const today=new Date();
+  $('todayLabel').textContent=fmtDE(today);
 
-  const inc = Number(ls.inc || TEMPLATE[sessionKey].mainLift.inc || 2.5);
-
-  // Helper: is deload?
-  const isDeload = (w)=>deloadWeeks.has(w);
-
-  // We build an "effective progression index" that can stall or step back based on last logged RPE/tech.
-  // Only non-deload weeks can advance the index.
-  let progIndex = 0; // week1 uses startWeight + 0*inc
-
-  // Sort entries by week
-  const entriesByWeek = new Map();
-  (ls.entries || []).forEach(e=>entriesByWeek.set(Number(e.week), e));
-
-  // Iterate from week 1 up to target week, updating progIndex AFTER each non-deload week based on its log
-  for(let w=1; w<week; w++){
-    if(isDeload(w)) continue; // deload doesn't advance
-    const e = entriesByWeek.get(w);
-    // If there is a log, apply conservative adjustment to decide whether to advance/stall/step back.
-    // Default behavior if no log: advance normally by 1 step (keeps plan moving).
-    if(e){
-      const adj = performanceAdjustment(inc, e.rpe, e.tech);
-      if(adj >= inc*0.99){
-        progIndex += 1; // advance
-      }else if(adj <= -inc*0.99){
-        progIndex = Math.max(0, progIndex-1); // step back
-      }else{
-        // stall
-        progIndex += 0;
-      }
-    }else{
-      progIndex += 1;
-    }
-  }
-
-  // Compute planned weight for target week
-  let planned = 0;
-
-  if(isDeload(week)){
-    // Deload weight = 85% of previous week's NORMAL weight (not deload)
-    // Find previous week < week that is not deload
-    let prev = week-1;
-    while(prev>=1 && isDeload(prev)) prev--;
-    // Compute prev normal planned using current progIndex at that previous point:
-    // We can estimate prev index by simulating up to prev:
-    let prevIndex = 0;
-    for(let w=1; w<=prev; w++){
-      if(isDeload(w)) continue;
-      if(w===1){ prevIndex = 0; }
-      if(w>1){
-        const e = entriesByWeek.get(w-1);
-        if(e){
-          const adj = performanceAdjustment(inc, e.rpe, e.tech);
-          if(adj >= inc*0.99) prevIndex += 1;
-          else if(adj <= -inc*0.99) prevIndex = Math.max(0, prevIndex-1);
-        }else{
-          prevIndex += 1;
-        }
-      }
-    }
-    const prevWeight = Number(ls.startWeight) + prevIndex*inc;
-    planned = prevWeight * 0.85;
-  }else{
-    planned = Number(ls.startWeight) + progIndex*inc;
-  }
-
-  // Round to 0.5kg
-  planned = Math.round(planned*2)/2;
-  if(planned < 0) planned = 0;
-  return planned;
-}
-function performanceAdjustment(inc, rpe, tech){
-  // Konservativ (wie besprochen):
-  // RPE ≤ 8 (und Technik ok) -> +inc
-  // RPE 8.5 -> 0
-  // RPE ≥ 9 -> -inc
-  // Technik wacklig/schlecht -> eher bremsen
-  const r = Number(rpe);
-  let adj = 0;
-
-  if(tech === "schlecht"){
-    adj = -inc;
-  }else if(tech === "wacklig"){
-    if(r <= 8) adj = 0;
-    else adj = -inc/2;
-  }else{ // ok
-    if(r <= 8) adj = inc;
-    else if(r === 8.5) adj = 0;
-    else if(r >= 9) adj = -inc;
-    else adj = 0;
-  }
-
-  // Clamp
-  const max = inc;
-  if(adj > max) adj = max;
-  if(adj < -max) adj = -max;
-  return adj;
-}
-function recordEntry(sessionKey, week, weight, rpe, tech, note){
-  const ls = getLiftState(sessionKey);
-  ls.entries = ls.entries.filter(e => !(e.week === week)); // replace
-  ls.entries.push({week, weight:Number(weight), rpe:Number(rpe), tech, note: note||"", tsISO: isoFromDateLocal(new Date())});
-  saveState();
-}
-function setStartWeightIfMissing(sessionKey, startWeight){
-  const ls = getLiftState(sessionKey);
-  if(ls.startWeight == null && startWeight != null && startWeight !== ""){
-    ls.startWeight = Number(startWeight);
-    saveState();
-    return true;
-  }
-  return false;
-}
-
-/* ---------- UI wiring ---------- */
-const el = (id)=>document.getElementById(id);
-let state = loadState();
-
-function init(){
-  // week dropdowns
-  el("weekSelect").innerHTML = "";
-  const emptyOpt = document.createElement("option");
-  emptyOpt.value = "";
-  emptyOpt.textContent = "Bitte Startdatum setzen";
-  el("weekSelect").appendChild(emptyOpt);
-
-  weekLabels.forEach(({w,label})=>{
-    const o = document.createElement("option");
-    o.value = String(w);
-    o.textContent = label;
-    el("weekSelect").appendChild(o);
-  });
-
-  // backfill week dropdown
-  el("bfWeek").innerHTML = "";
-  weekLabels.forEach(({w,label})=>{
-    const o = document.createElement("option");
-    o.value = String(w);
-    o.textContent = label;
-    el("bfWeek").appendChild(o);
-  });
-
-  // load into controls
-  el("viewSelect").value = state.view || "week";
-
-  // Start date: if locked, show as disabled.
-  if(state.startISO){
-    el("startDate").value = state.startISO;
-  }
-  applyStartLockUI();
-
-  // Selected week validity
-  if(state.startISO){
-    el("weekSelect").value = String(state.selectedWeek || 1);
-  }else{
-    el("weekSelect").value = "";
-  }
-
-  // Buttons
-  el("btnStart").onclick = onStart;
-  el("btnToday").onclick = onToday;
-  el("btnReload").onclick = ()=>{ state = loadState(); init(); render(); };
-  el("btnReset").onclick = onReset;
-  el("viewSelect").onchange = ()=>{ state.view = el("viewSelect").value; saveState(); render(); };
-  el("weekSelect").onchange = ()=>{
-    const v = el("weekSelect").value;
-    if(!v) return;
-    state.selectedWeek = Number(v);
-    saveState();
-    render();
-  };
-
-  // Export/Import
-  el("btnExport").onclick = exportJSON;
-  el("importFile").onchange = importJSON;
-
-  // Backfill
-  el("btnBackfill").onclick = openBackfill;
-  el("modalClose").onclick = closeBackfill;
-  el("bfCancel").onclick = closeBackfill;
-  el("bfSave").onclick = saveBackfill;
-
-  // click outside modal
-  el("modalOverlay").addEventListener("click", (e)=>{
-    if(e.target === el("modalOverlay")) closeBackfill();
-  });
-
-  // first time meta
-  if(!state.exportMeta.createdISO){
-    state.exportMeta.createdISO = isoFromDateLocal(new Date());
-    saveState();
-  }
-
-  render();
-}
-
-function applyStartLockUI(){
-  if(state.lockedStart){
-    el("startDate").disabled = true;
-    el("startLockHint").style.display = "block";
-  }else{
-    el("startDate").disabled = false;
-    el("startLockHint").style.display = "none";
-  }
-}
-
-function onStart(){
-  const picked = el("startDate").value;
-  if(!picked){
-    setStatus("Bitte Startdatum setzen (Montag).", "warn");
-    return;
-  }
-  const guarded = mondayGuard(picked);
-  if(guarded !== picked){
-    // auto-correct to Monday
-    el("startDate").value = guarded;
-    setStatus("Startdatum war kein Montag. Ich habe es auf den Montag derselben Woche korrigiert: "+guarded, "warn");
-  }
-
-  state.startISO = el("startDate").value;
-  state.lockedStart = true; // lock after first start to avoid drift
-
-  // Prefill Startgewichte (du kannst es jederzeit überschreiben, bevor du loggst)
-  try{
-    const dl = getLiftState("kraftA");
-    if(dl.startWeight == null) dl.startWeight = 115; // konservativer Start
-  }catch(e){}
-
-  state.selectedWeek = state.selectedWeek || 1;
-  saveState();
-  applyStartLockUI();
-
-  // activate week select if needed
-  el("weekSelect").value = String(state.selectedWeek);
-
-  render();
-  setStatus("OK. Start gesetzt auf "+state.startISO+". Woche‑Auswahl aktiv.", "ok");
-}
-
-function onReset(){
-  const keep = confirm("Reset löscht Startdatum + Ansichten + Coach-Logs in diesem Browser. Sicher?");
-  if(!keep) return;
-  localStorage.removeItem(KEY);
-  state = loadState();
-  init();
-  setStatus("Reset durchgeführt. Bitte Startdatum neu setzen.", "warn");
-}
-
-function onToday(){
-  if(!state.startISO){
-    setStatus("Setze zuerst Startdatum, dann kann „Heute“ sauber rechnen.", "warn");
-    return;
-  }
-  const todayISO = isoFromDateLocal(new Date());
-  const d = diffDaysISO(state.startISO, todayISO);
-  const week = Math.max(1, Math.min(WEEKS, Math.floor(d/7)+1));
-  state.selectedWeek = week;
-  state.view = "day";
-  state.lastViewDayISO = todayISO;
-  saveState();
-  el("viewSelect").value = "day";
-  el("weekSelect").value = String(week);
-  render();
-}
-
-function setStatus(text, kind){
-  const box = el("status");
-  box.textContent = text;
-  box.className = "hint" + (kind==="warn" ? " warn" : (kind==="ok" ? " ok" : ""));
-}
-
-/* ---------- Progress (Bars) ---------- */
-function clamp01(x){ return Math.max(0, Math.min(1, x)); }
-
-function strengthTargetWeight(sessionKey){
-  const ls = getLiftState(sessionKey);
-  if(ls.startWeight == null) return null;
-  // Zielkorridor: +10% (nüchtern)
-  const target = Number(ls.startWeight) * 1.10;
-  return Math.round(target*2)/2;
-}
-
-function strengthProgress(sessionKey){
-  const ls = getLiftState(sessionKey);
-  if(ls.startWeight == null) return {pct:0, label:"Startgewicht fehlt"};
-  const start = Number(ls.startWeight);
-  const target = strengthTargetWeight(sessionKey);
-  // Use best logged weight so far (not deload-filtered; it's fine as indicator)
-  const best = (ls.entries||[]).reduce((m,e)=>Math.max(m, Number(e.weight)||0), start);
-  const pct = (target>start) ? clamp01((best-start)/(target-start)) : 0;
-  return {pct, start, target, best};
-}
-
-function pullProgress(){
-  const lvl = Number(state.skills?.pullLevel ?? 0);
-  const max = 4;
-  return {pct: clamp01(lvl/max), lvl, max};
-}
-function handProgress(){
-  const lvl = Number(state.skills?.handLevel ?? 1);
-  const max = 5;
-  return {pct: clamp01((lvl-1)/(max-1)), lvl, max};
-}
-
-function prescriptionFor(sessionKey, week){
-  const base = TEMPLATE[sessionKey].mainLift.prescription; // e.g. "4×5 @RPE 7–8"
-  if(!deloadWeeks.has(week)) return base;
-  // Deload: -20% volume => 4 sets -> 3 sets (simple, safe)
-  return base.replace(/^4×/,'3×');
-}
-
-function volumeNoteFor(week){
-  return deloadWeeks.has(week) ? "Deload: −15% Last, −20% Volumen" : "Volumen normal";
-}
-
-function saveSkillLevels(pullLevel, handLevel){
-  state.skills = state.skills || {pullLevel:0, handLevel:1};
-  state.skills.pullLevel = Number(pullLevel);
-  state.skills.handLevel = Number(handLevel);
-  saveState();
-}
-
-function render(){
-  const todayISO = isoFromDateLocal(new Date());
-  el("pillToday").textContent = todayISO;
+  buildWeekSelect();
 
   if(!state.startISO){
-    el("pillStart").textContent = "—";
-    el("pillCycle").textContent = "—";
-    el("pillDeload").style.display = "none";
-    el("schedule").innerHTML = "";
-    el("debug").textContent = `startISO=∅ · selectedWeek=${state.selectedWeek} · view=${state.view} · todayISO=${todayISO}`;
-    return;
-  }
-
-  el("pillStart").textContent = state.startISO;
-
-  // compute cycle week from today
-  const d = diffDaysISO(state.startISO, todayISO);
-  const cycleWeek = Math.max(1, Math.floor(d/7)+1);
-  el("pillCycle").textContent = "Woche "+cycleWeek+"/12";
-
-  const currentDeload = deloadWeeks.has(Number(state.selectedWeek||1));
-  el("pillDeload").style.display = currentDeload ? "inline-flex" : "none";
-
-  // Render schedule
-  const week = Number(state.selectedWeek||1);
-  const {weekStart, days} = dayScheduleForWeek(state.startISO, week);
-
-  const view = state.view || "week";
-  const onlyISO = (view==="day") ? (state.lastViewDayISO || todayISO) : null;
-
-  const out = [];
-  days.forEach((dObj)=>{
-    if(onlyISO && dObj.iso !== onlyISO) return;
-
-    const isToday = dObj.iso === todayISO;
-    const isDeload = deloadWeeks.has(week);
-    if(dObj.session === "kraftA" || dObj.session === "kraftB"){
-      const t = TEMPLATE[dObj.session];
-      const liftState = getLiftState(dObj.session);
-      const planned = plannedWeightForWeek(dObj.session, week);
-      const plannedText = planned == null ? "Noch kein Startgewicht" : (planned+" kg");
-      const volText = volumeNoteFor(week);
-      const entry = liftState.entries.find(e=>e.week===week);
-      const loggedText = entry ? `Geloggte Woche ${week}: ${entry.weight} kg · RPE ${entry.rpe} · Technik ${entry.tech}` : "Noch kein Log für diese Woche.";
-
-      out.push(`
-        <div class="dayCard">
-          <div class="dayHead">
-            <div>
-              <div class="dayName">${dObj.dow} – ${t.title.split(" – ")[1]}</div>
-              <div class="liftMeta">${t.note}</div>
-            </div>
-            <div style="display:flex;gap:8px;align-items:center">
-              <span class="tag">${t.tag}</span>
-              ${isDeload?`<span class="tag deload">Deload</span>`:""}
-              ${isToday?`<span class="tag today">Heute</span>`:""}
-            </div>
-          </div>
-
-          <div class="liftRow">
-            <div class="liftMain">1) ${t.mainLift.name}</div>
-            <div class="liftMeta">${prescriptionFor(dObj.session, week)}</div>
-          </div>
-
-          <details class="desc">
-            <summary>Übungsbeschreibung + Video</summary>
-            <div class="descBody">
-              <div class="small"><b>Technik‑Cues (kurz):</b> Rücken lang, Lat an, Bar nah am Körper, drück den Boden weg. Bei Grip‑Limit: chalk + Straps ok (aber sauber).</div>
-              <div style="height:8px"></div>
-              <a class="btn linkBtn" href="${dObj.session==='kraftA' ? 'https://www.youtube.com/results?search_query=deadlift+technique+coach' : 'https://www.youtube.com/results?search_query=bench+press+technique+coach'}" target="_blank" rel="noopener">Video‑Suche öffnen</a>
-            </div>
-          </details>
-
-          <div class="coachBox">
-            <div class="coachHead">
-              <div class="coachBadge"><span class="dot"></span>Coach</div>
-              <div class="tag">Plan W${week}: <b>${plannedText}</b></div>
-            </div>
-
-            ${(()=>{
-              const sp = strengthProgress(dObj.session);
-              if(sp.label){ return `<div class="small muted">${sp.label}</div>`; }
-              const pct = Math.round(sp.pct*100);
-              return `
-                <div class="pbWrap">
-                  <div class="pbLabel">
-                    <span><b>Progress</b> ${sp.best} kg</span>
-                    <span class="muted">Start ${sp.start} → Ziel ~${sp.target} kg</span>
-                  </div>
-                  <div class="pb"><div class="pbFill" style="width:${pct}%"></div></div>
-                </div>
-              `;
-            })()}
-
-            <div class="small">${isDeload ? "Deload‑Logik aktiv: Last −15% (berechnet), Volumen −20% (Hinweis)." : "Nach dem Training loggen → Coach plant nächste Woche."}</div>
-
-            <div style="height:10px"></div>
-
-            <div class="row row3">
-              <div>
-                <label>Startgewicht (nur einmal; ab dann auto)</label>
-                <input data-start="${dObj.session}" inputmode="decimal" placeholder="z.B. 120" value="${liftState.startWeight ?? ""}">
-              </div>
-              <div>
-                <label>Log Gewicht (W${week})</label>
-                <input data-logw="${dObj.session}" inputmode="decimal" placeholder="${plannedText}" value="${entry ? entry.weight : ""}">
-              </div>
-              <div>
-                <label>RPE / Technik</label>
-                <div class="row row2" style="gap:10px">
-                  <select data-rpe="${dObj.session}">
-                    ${[6,7,8,9,10].map(x=>`<option ${entry && entry.rpe===x ? "selected":""}>${x}</option>`).join("")}
-                  </select>
-                  <select data-tech="${dObj.session}">
-                    <option value="ok" ${entry && entry.tech==="ok" ? "selected":""}>OK</option>
-                    <option value="wacklig" ${entry && entry.tech==="wacklig" ? "selected":""}>Wacklig</option>
-                    <option value="schlecht" ${entry && entry.tech==="schlecht" ? "selected":""}>Schlecht</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div style="height:10px"></div>
-            <div class="btns">
-              <button class="btn primary" data-apply="${dObj.session}" data-week="${week}">Log speichern + Coach anwenden</button>
-              <button class="btn" data-warmup="${dObj.session}" data-week="${week}">Warm‑up anzeigen</button>
-              <span class="small muted" style="margin-left:auto">${volText}</span>
-            </div>
-
-            <div class="small muted" style="margin-top:10px">${loggedText}</div>
-          </div>
-
-          <div class="hr"></div>
-          <div class="liftRow">
-            <div class="liftMain">2) Secondary</div>
-            <div class="liftMeta">${t.secondary}</div>
-          </div>
-        </div>
-      `);
-    }}else{
-  const t = sessionCardText(dObj.session);
-
-  if(dObj.session === "skill"){
-    const pp = pullProgress();
-    const hp = handProgress();
-    const pullLevel = Number(state.skills?.pullLevel ?? 0);
-    const handLevel = Number(state.skills?.handLevel ?? 1);
-
-    out.push(`
-      <div class="dayCard">
-        <div class="dayHead">
-          <div>
-            <div class="dayName">${t.title}</div>
-            <div class="liftMeta">${t.note}</div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <span class="tag">${t.tag}</span>
-            ${isDeload?`<span class="tag deload">Deload</span>`:""}
-            ${isToday?`<span class="tag today">Heute</span>`:""}
-          </div>
-        </div>
-
-        <div class="pbWrap">
-          <div class="pbLabel"><span><b>Pull‑up Level</b> ${pullLevel}/4</span><span class="muted">0=Hang · 1=30s · 2=Band 3×5 · 3=1 frei · 4=3 frei</span></div>
-          <div class="pb"><div class="pbFill" style="width:${Math.round(pp.pct*100)}%"></div></div>
-        </div>
-
-        <div class="pbWrap">
-          <div class="pbLabel"><span><b>Handstand Level</b> ${handLevel}/5</span><span class="muted">1=30s Wand · 2=45s · 3=Taps · 4=5–10s frei · 5=15–20s frei</span></div>
-          <div class="pb"><div class="pbFill" style="width:${Math.round(hp.pct*100)}%"></div></div>
-        </div>
-
-        <div class="skillGrid" style="margin-top:14px">
-          <div>
-            <label>Pull‑up Level (nur Level, kein Overtracking)</label>
-            <select id="pullLevelSel">
-              ${[0,1,2,3,4].map(x=>`<option value="${x}" ${x===pullLevel?"selected":""}>Level ${x}</option>`).join("")}
-            </select>
-          </div>
-          <div>
-            <label>Handstand Level</label>
-            <select id="handLevelSel">
-              ${[1,2,3,4,5].map(x=>`<option value="${x}" ${x===handLevel?"selected":""}>Level ${x}</option>`).join("")}
-            </select>
-          </div>
-        </div>
-
-        <div class="btns" style="margin-top:12px">
-          <button class="btn primary" data-skill-save="1">Levels speichern</button>
-          <span class="small muted" style="margin-left:auto">${volumeNoteFor(week)}</span>
-        </div>
-
-        <div class="hr"></div>
-        <div class="small muted">${t.details}</div>
-      </div>
-    `);
+    const d=mondayOf(addDays(today, 7));
+    $('startDate').value=isoToLocalDateInput(d.toISOString());
+    $('startLabel').textContent='—';
+    state.week=1;
   }else{
-    out.push(`
-      <div class="dayCard">
-        <div class="dayHead">
-          <div>
-            <div class="dayName">${t.title}</div>
-            <div class="liftMeta">${t.note}</div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <span class="tag">${t.tag}</span>
-            ${isDeload?`<span class="tag deload">Deload</span>`:""}
-            ${isToday?`<span class="tag today">Heute</span>`:""}
-          </div>
-        </div>
-        <div class="small muted" style="margin-top:10px">${t.details}</div>
-      </div>
-    `);
-  }
-}
-  });
-
-  el("schedule").innerHTML = out.join("");
-
-  // attach button handlers in rendered schedule
-  document.querySelectorAll("[data-apply]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const sessionKey = btn.getAttribute("data-apply");
-      const week = Number(btn.getAttribute("data-week"));
-      applyCoachFromCard(sessionKey, week);
-    });
-  });
-  document.querySelectorAll("[data-warmup]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const sessionKey = btn.getAttribute("data-warmup");
-      const week = Number(btn.getAttribute("data-week"));
-      showWarmup(sessionKey, week);
-    });
-  });
-
-  
-  document.querySelectorAll("[data-skill-save]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const p = document.getElementById("pullLevelSel");
-      const h = document.getElementById("handLevelSel");
-      if(!p || !h) return;
-      saveSkillLevels(p.value, h.value);
-      setStatus("Levels gespeichert. (Pull‑up & Handstand sind bewusst manuell – kein Overtracking.)", "ok");
-      render();
-    });
-  });
-
-  // set status/debug
-  const label = weekLabels.find(x=>x.w===week)?.label || ("Woche "+week);
-  setStatus(`OK. Anzeige: ${label} · Ansicht: ${view==="week"?"Woche":"Tag"}${view==="day" ? (" ("+(onlyISO||todayISO)+")"):""}.`, "ok");
-  el("debug").textContent = `startISO=${state.startISO} · lockedStart=${state.lockedStart} · selectedWeek=${week} · view=${view} · lastViewDayISO=${state.lastViewDayISO||"∅"} · todayISO=${todayISO}`;
-}
-
-function applyCoachFromCard(sessionKey, week){
-  const startInput = document.querySelector(`input[data-start="${sessionKey}"]`);
-  const logW = document.querySelector(`input[data-logw="${sessionKey}"]`);
-  const rpe = document.querySelector(`select[data-rpe="${sessionKey}"]`);
-  const tech = document.querySelector(`select[data-tech="${sessionKey}"]`);
-
-  const startVal = (startInput?.value || "").trim();
-  const wVal = (logW?.value || "").trim();
-
-  if(!getLiftState(sessionKey).startWeight && !startVal){
-    setStatus("Bitte erst Startgewicht setzen (einmalig).", "warn");
-    startInput?.focus();
-    return;
-  }
-  if(!getLiftState(sessionKey).startWeight && startVal){
-    setStartWeightIfMissing(sessionKey, startVal);
+    $('startLabel').textContent=fmtDE(new Date(state.startISO));
+    $('startDate').value=isoToLocalDateInput(state.startISO);
+    state.week=clamp(state.week || cycleWeekFor(today), 1, 12);
   }
 
-  if(!wVal){
-    setStatus("Bitte Log‑Gewicht eintragen (was du wirklich bewegt hast).", "warn");
-    logW?.focus();
-    return;
-  }
+  $('weekSelect').value=String(state.week);
+  $('viewSelect').value=state.view;
 
-  recordEntry(sessionKey, week, wVal, rpe.value, tech.value, "");
-  // nudge to next week view (adult, helpful)
-  const nextWeek = Math.min(WEEKS, week+1);
-  state.selectedWeek = nextWeek;
-  saveState();
-  el("weekSelect").value = String(nextWeek);
-  render();
-  setStatus(`Log gespeichert. Coach hat Woche ${nextWeek} geplant (im Rahmen der einfachen Kurve).`, "ok");
+  updatePhaseLabel();
+  renderDays();
+  if(state.view==='day') setTimeout(()=>document.querySelector('.day')?.classList.add('open'), 0);
 }
 
-function showWarmup(sessionKey, week){
-  const planned = plannedWeightForWeek(sessionKey, week);
-  if(planned == null){
-    alert("Setze zuerst ein Startgewicht. Dann kann der Warm-up Generator sauber rechnen.");
-    return;
-  }
-  const target = planned;
-  // simple warm-up ladder to target
-  const steps = [
-    [0.4,5],
-    [0.6,5],
-    [0.7,3],
-    [0.8,2],
-    [0.9,1],
-  ].map(([p,reps])=>{
-    const w = Math.round((target*p)*2)/2;
-    return `${w}×${reps}`;
-  });
-  const msg = `Warm-up (Ziel ${target} kg)\n\n${steps.join(" · ")} → ${target}×(Arbeitssets)\n\nHinweis: Wenn du dich steif fühlst: 1–2 leichtere Sätze extra.`;
-  alert(msg);
-}
-
-/* ---------- Export/Import ---------- */
-function exportJSON(){
-  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `athletik_v11_export_${isoFromDateLocal(new Date())}.json`;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 0);
-}
-function importJSON(ev){
-  const file = ev.target.files?.[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    try{
-      const incoming = JSON.parse(String(reader.result||""));
-      // basic sanity
-      if(!incoming || typeof incoming !== "object") throw new Error("bad");
-      // merge carefully
-      state = {...defaultState(), ...incoming};
-      saveState();
-      init();
-      setStatus("Import ok. State übernommen.", "ok");
-    }catch(e){
-      alert("Import fehlgeschlagen. Bitte die Original-JSON wählen.");
-    }finally{
-      ev.target.value = "";
-    }
-  };
-  reader.readAsText(file);
-}
-
-/* ---------- Backfill ---------- */
-function openBackfill(){
-  if(!state.startISO){
-    setStatus("Bitte zuerst Startdatum setzen. Dann weiß der Coach, welche Woche du nachträgst.", "warn");
-    return;
-  }
-  el("bfResult").style.display = "none";
-  el("bfWeight").value = "";
-  el("bfStart").value = "";
-  el("bfNote").value = "";
-
-  // default: last completed strength day based on today
-  const todayISO = isoFromDateLocal(new Date());
-  const d = diffDaysISO(state.startISO, todayISO);
-  const week = Math.max(1, Math.min(WEEKS, Math.floor(d/7)+1));
-  el("bfWeek").value = String(week);
-
-  // pick session based on weekday
-  const day = parseISO(todayISO).getDay(); // 1 mon ... 5 fri
-  el("bfSession").value = (day >= 5) ? "kraftB" : "kraftA";
-
-  el("modalOverlay").style.display = "flex";
-  el("modalOverlay").setAttribute("aria-hidden", "false");
-}
-function closeBackfill(){
-  el("modalOverlay").style.display = "none";
-  el("modalOverlay").setAttribute("aria-hidden", "true");
-}
-function saveBackfill(){
-  const sessionKey = el("bfSession").value;
-  const week = Number(el("bfWeek").value);
-  const weight = (el("bfWeight").value||"").trim();
-  const start = (el("bfStart").value||"").trim();
-  const rpe = el("bfRpe").value;
-  const tech = el("bfTech").value;
-  const note = (el("bfNote").value||"").trim();
-
-  if(!getLiftState(sessionKey).startWeight && !start){
-    el("bfResult").style.display="block";
-    el("bfResult").textContent = "Bitte Startgewicht setzen (nur wenn noch nicht gesetzt).";
-    el("bfResult").className = "hint warn";
-    return;
-  }
-  if(!getLiftState(sessionKey).startWeight && start){
-    setStartWeightIfMissing(sessionKey, start);
-  }
-  if(!weight){
-    el("bfResult").style.display="block";
-    el("bfResult").textContent = "Bitte Log-Gewicht eintragen.";
-    el("bfResult").className = "hint warn";
-    return;
-  }
-  recordEntry(sessionKey, week, weight, rpe, tech, note);
-
-  // Move view to that week and render
-  state.selectedWeek = week;
-  saveState();
-  el("weekSelect").value = String(week);
-  render();
-
-  // show result with next planned weight
-  const nextW = Math.min(WEEKS, week+1);
-  const nextPlan = plannedWeightForWeek(sessionKey, nextW);
-  el("bfResult").style.display="block";
-  el("bfResult").className = "hint ok";
-  el("bfResult").innerHTML = `<b>Gespeichert.</b> Coach‑Plan für ${TEMPLATE[sessionKey].title.split(" – ")[0]} Woche ${nextW}: <b>${nextPlan ?? "—"} kg</b>.`;
-}
-
-/* ---------- boot ---------- */
-init();
+loadState();
+registerSW();
+initUI();
 </script>
 </body>
 </html>

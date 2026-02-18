@@ -1,0 +1,21 @@
+{
+  "name": "Athletik System",
+  "short_name": "Athletik",
+  "start_url": "./?source=pwa",
+  "display": "standalone",
+  "background_color": "#F5F8FC",
+  "theme_color": "#101828",
+  "description": "12-Wochen Athletik-System mit Kraft, Klimmzug & Handstand. Offline nutzbar.",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
