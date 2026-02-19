@@ -163,7 +163,23 @@
     }
     .install.show{display:flex}
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas; font-size: 12px;}
-  </style>
+  
+    .coachbox{ margin:12px 0 6px; padding:12px; border:1px solid #e8e8e8; border-radius:14px; background:#fafafa;}
+    .coachhead{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+    .coachgrid{ display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:10px; margin-top:10px;}
+    .coachgrid label{ display:block; font-size:12px; color:var(--muted); margin-bottom:4px;}
+    .coachgrid input,.coachgrid select{ width:100%; padding:10px 10px; border-radius:12px; border:1px solid #ddd; background:white; font-size:14px;}
+    .coachplan{ margin-top:10px; padding:10px; border-radius:12px; background:white; border:1px dashed #e2e2e2;}
+    .coachnext{ margin-top:8px; }
+    .chips{ display:inline-block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; padding:6px 8px; border-radius:10px; background:#f3f3f3; }
+    .bar{ width:180px; height:10px; background:#ececec; border-radius:999px; overflow:hidden;}
+    .bar .fill{ height:100%; background:#111; width:0%; }
+    @media(max-width: 820px){
+      .coachgrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .bar{ width:100%; }
+    }
+
+</style>
 </head>
 <body>
   <div class="wrap">
@@ -267,24 +283,25 @@ const WEEK_PHASES = [
   { w:12, label:'Deload + Test', note:'Deload + Mini-Tests (optional). Frisch bleiben.' },
 ];
 
-function blk(id, title, right, type, options, def, desc, prescription, video){
+function blk(id, title, right, type, options, def, desc, prescription, video, coachCfg){
   return { id, title, right, type, options, def, desc, prescription, video,
     selKey: PREFIX + 'sel.' + id,
     progKey: PREFIX + 'prog.' + id,
     linkKey: PREFIX + 'video.' + id
+    coachCfg: coachCfg || null
   };
 }
 function defaultPlan(){
   const plan = {};
   plan.mon = [
-    blk('mon.hinge','1) Hauptlift – Hinge (4×5, RPE 7–8)','2 Reps im Tank','select',
+    blk('mon.hinge','1, { key:'deadlift', name:'Deadlift', inc:2.5, step:2.5, deloadWeeks:[4,8,12], targetDefault:140 }) Hauptlift – Hinge (4×5, RPE 7–8)','2 Reps im Tank','select',
       ['Trap Bar Deadlift','Romanian Deadlift','Barbell Deadlift (technikstabil)'],
       'Trap Bar Deadlift',
       'Setup: Fußdruck, neutrale Wirbelsäule, Lat aktiv. Tempo kontrolliert runter, explosiv hoch.',
       '4×5. Woche 1–3: +2,5–5 kg/Woche. Woche 4: Deload ~80%.',
       'https://www.youtube.com/results?search_query=trap+bar+deadlift+coaching+form'
     ),
-    blk('mon.uni','2) Unilateral Lower (3×6–8/Seite)','Alternative möglich','select',
+    blk('mon.uni','2, { mode:'bySelection', options:{'Bulgarian Split Squat':{key:'bulgarian',name:'Bulgarian Split Squat',inc:1,step:1,deloadWeeks:[4,8,12],targetDefault:24},'Front Squat':{key:'frontsquat',name:'Front Squat',inc:2.5,step:2.5,deloadWeeks:[4,8,12],targetDefault:100}} }) Unilateral Lower (3×6–8/Seite)','Alternative möglich','select',
       ['Bulgarian Split Squat','Front Squat (3×5–6)','Step-Ups schwer'],
       'Bulgarian Split Squat',
       'ROM sauber, Knie folgt Zehen. Lieber 6 sauber als 8 krumm.',
@@ -330,7 +347,7 @@ function defaultPlan(){
       'https://www.youtube.com/results?search_query=post+workout+cooldown+mobility'
   )];
   plan.fri = [
-    blk('fri.push','1) Hauptlift – Push (4×6–8)','', 'select',
+    blk('fri.push','1, { key:'bench', name:'Bankdrücken', inc:2.5, step:2.5, deloadWeeks:[4,8,12], targetDefault:100 }) Hauptlift – Push (4×6–8)','', 'select',
       ['Bankdrücken','DB Press','Ring Push-ups (schwer)'],
       'Bankdrücken',
       'Schulterblätter hinten/unten. Kein Bouncen.',
@@ -572,6 +589,238 @@ function renderDays(){
   });
 }
 
+
+  // ---- Coach (robust, simple) ----
+  const COACH_PREFIX = PREFIX + 'coach.';
+  function slug(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+  function isDeload(week, deloadWeeks){ return (deloadWeeks||[]).includes(week); }
+  function roundToStep(x, step){
+    const s = Number(step||0.5);
+    if(!isFinite(s) || s<=0) return Math.round(x*2)/2;
+    return Math.round(x/s)*s;
+  }
+  function coachKeyFor(blockId, cfg, selectedOption){
+    if(!cfg) return null;
+    if(cfg.mode === 'bySelection' && cfg.options){
+      const optCfg = cfg.options[selectedOption];
+      if(!optCfg) return null;
+      return blockId + '::' + optCfg.key;
+    }
+    return blockId + '::' + cfg.key;
+  }
+  function coachCfgFor(cfg, selectedOption){
+    if(!cfg) return null;
+    if(cfg.mode === 'bySelection' && cfg.options) return cfg.options[selectedOption] || null;
+    return cfg;
+  }
+  function kStart(key){ return COACH_PREFIX + key + '.start'; }
+  function kTarget(key){ return COACH_PREFIX + key + '.target'; }
+  function kPlan(key,w){ return COACH_PREFIX + key + '.plan.w' + w; }
+  function kHard(key,w){ return COACH_PREFIX + key + '.hard.w' + w; }
+  function kLog(key,w){ return COACH_PREFIX + key + '.log.w' + w; }
+
+  function getNum(k, fallback){
+    const v = localStorage.getItem(k);
+    const n = v==null ? NaN : Number(v);
+    return isFinite(n) ? n : fallback;
+  }
+  function setNum(k, n){ localStorage.setItem(k, String(n)); }
+
+  function getHardForWeek(key, week){
+    for(let w=week; w>=1; w--){
+      const v = getNum(kHard(key,w), NaN);
+      if(isFinite(v)) return v;
+      const pv = getNum(kPlan(key,w), NaN);
+      if(isFinite(pv) && !isDeload(w, [4,8,12])) return pv;
+    }
+    return NaN;
+  }
+
+  function computePlannedBase(key, cfg, week){
+    const existing = getNum(kPlan(key,week), NaN);
+    if(isFinite(existing)) return existing;
+
+    const start = getNum(kStart(key), NaN);
+    if(!isFinite(start)) return NaN;
+
+    if(isDeload(week, cfg.deloadWeeks)){
+      const hardPrev = getHardForWeek(key, week-1);
+      if(isFinite(hardPrev)) return roundToStep(hardPrev * 0.85, cfg.step);
+      return roundToStep(start * 0.85, cfg.step);
+    }
+
+    const hardPrev = getHardForWeek(key, week-1);
+    if(isFinite(hardPrev)) return roundToStep(hardPrev + cfg.inc, cfg.step);
+
+    return roundToStep(start + (week-1)*cfg.inc, cfg.step);
+  }
+
+  function warmupChips(weight, step){
+    if(!isFinite(weight) || weight<=0) return '';
+    const rounds = (x)=>roundToStep(x, step);
+    const seq = [
+      [0.40,5],
+      [0.60,5],
+      [0.70,3],
+      [0.80,2],
+      [0.90,1]
+    ].map(([p,r])=>`${rounds(weight*p)}×${r}`).join('  ');
+    return `<span class="chips">${seq}  →  <b>${rounds(weight)}×1</b></span>`;
+  }
+
+  function renderCoach(block, selectedOption, week){
+    const cfg = coachCfgFor(block.coachCfg, selectedOption);
+    if(!cfg) return '';
+    const key = coachKeyFor(block.id, block.coachCfg, selectedOption);
+    if(!key) return '';
+    const start = getNum(kStart(key), NaN);
+    const target = getNum(kTarget(key), cfg.targetDefault || NaN);
+    const planned = computePlannedBase(key, cfg, week);
+    const deloadNote = isDeload(week, cfg.deloadWeeks) ? ' (Deload −15%)' : '';
+    const nextWeek = week+1;
+    const nextPlanned = nextWeek<=12 ? computePlannedBase(key, cfg, nextWeek) : NaN;
+
+    const logRaw = localStorage.getItem(kLog(key, week));
+    let log = {};
+    try{ log = logRaw ? JSON.parse(logRaw) : {}; }catch(e){ log={}; }
+
+    const prog = (isFinite(target) && isFinite(planned)) ? Math.max(0, Math.min(1, planned/target)) : null;
+
+    return `
+      <div class="coachbox" 
+        data-coachkey="${key}" 
+        data-week="${week}"
+        data-inc="${cfg.inc}"
+        data-step="${cfg.step}"
+        data-deload="${(cfg.deloadWeeks||[]).join(',')}"
+      >
+        <div class="coachhead">
+          <div><b>Coach: ${cfg.name}</b> · Woche ${week}${deloadNote}</div>
+          ${prog!==null ? `<div class="bar"><div class="fill" style="width:${Math.round(prog*100)}%"></div></div>` : ''}
+        </div>
+
+        <div class="coachgrid">
+          <div>
+            <label>Startgewicht (einmal)</label>
+            <input class="coach-start" type="number" inputmode="decimal" value="${isFinite(start)?start:''}" placeholder="z.B. ${isFinite(planned)?planned:''}">
+          </div>
+          <div>
+            <label>Ziel (optional)</label>
+            <input class="coach-target" type="number" inputmode="decimal" value="${isFinite(target)?target:''}" placeholder="">
+          </div>
+        </div>
+
+        <div class="coachplan">
+          <div><span class="muted">Plan:</span> <b>${isFinite(planned)?planned+' kg':'—'}</b>${deloadNote}</div>
+          <div class="muted">${warmupChips(planned, cfg.step)}</div>
+        </div>
+
+        <div class="coachgrid">
+          <div>
+            <label>Log: Gewicht</label>
+            <input class="coach-w" type="number" inputmode="decimal" value="${log.w ?? ''}" placeholder="kg">
+          </div>
+          <div>
+            <label>Reps (Top-Set)</label>
+            <input class="coach-reps" type="number" inputmode="numeric" value="${log.reps ?? ''}" placeholder="z.B. 6">
+          </div>
+          <div>
+            <label>RPE</label>
+            <select class="coach-rpe">
+              ${[6,6.5,7,7.5,8,8.5,9,9.5,10].map(v=>`<option value="${v}" ${String(log.rpe)==String(v)?'selected':''}>${v}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label>Technik</label>
+            <select class="coach-tech">
+              ${['ok','wacklig'].map(v=>`<option value="${v}" ${String(log.tech||'ok')==v?'selected':''}>${v==='ok'?'OK (sauber)':'wacklig'}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+
+        <button class="btn coach-apply">Log speichern + Coach anwenden</button>
+
+        <div class="coachnext muted">Nächste Woche (Plan): <b>${isFinite(nextPlanned)?nextPlanned+' kg':'—'}</b></div>
+      </div>
+    `;
+  }
+
+  function parseDeloadAttr(s){
+    if(!s) return [];
+    return String(s).split(',').map(x=>Number(x)).filter(n=>isFinite(n));
+  }
+
+  function applyCoach(box){
+    const key = box.dataset.coachkey;
+    const week = Number(box.dataset.week);
+    const inc = Number(box.dataset.inc);
+    const step = Number(box.dataset.step);
+    const deloadWeeks = parseDeloadAttr(box.dataset.deload);
+
+    const startInput = box.querySelector('.coach-start');
+    const targetInput = box.querySelector('.coach-target');
+    const wInput = box.querySelector('.coach-w');
+    const repsInput = box.querySelector('.coach-reps');
+    const rpeSel = box.querySelector('.coach-rpe');
+    const techSel = box.querySelector('.coach-tech');
+
+    const start = Number(startInput.value);
+    if(isFinite(start) && start>0) setNum(kStart(key), roundToStep(start, step));
+
+    const target = Number(targetInput.value);
+    if(isFinite(target) && target>0) setNum(kTarget(key), roundToStep(target, step));
+
+    const plannedThis = computePlannedBase(key, {inc,step,deloadWeeks}, week);
+    const hardThis = isDeload(week, deloadWeeks) ? getHardForWeek(key, week) : plannedThis;
+
+    const log = {
+      w: Number(wInput.value),
+      reps: Number(repsInput.value),
+      rpe: Number(rpeSel.value),
+      tech: String(techSel.value||'ok'),
+      ts: Date.now()
+    };
+    localStorage.setItem(kLog(key, week), JSON.stringify(log));
+
+    // delta rule (conservative):
+    let delta = 0;
+    if(log.tech !== 'ok' || log.rpe >= 9) delta = -inc/2;
+    else if(log.rpe >= 8.5) delta = 0;
+    else if(log.rpe >= 8) delta = inc/2;
+    else delta = inc;
+
+    // never below start
+    const startStored = getNum(kStart(key), NaN);
+    const baseHard = isFinite(hardThis) ? hardThis : startStored;
+    const nextHard = roundToStep(Math.max(startStored || 0, baseHard + delta), step);
+
+    const nextWeek = week + 1;
+
+    if(nextWeek <= 12){
+      if(isDeload(nextWeek, deloadWeeks)){
+        // set deload plan and remember hard anchor
+        setNum(kPlan(key, nextWeek), roundToStep(baseHard * 0.85, step));
+        setNum(kHard(key, nextWeek), baseHard);
+        // pre-seed week after deload
+        if(nextWeek+1 <= 12){
+          setNum(kPlan(key, nextWeek+1), nextHard);
+          setNum(kHard(key, nextWeek+1), nextHard);
+        }
+      } else {
+        setNum(kPlan(key, nextWeek), nextHard);
+        setNum(kHard(key, nextWeek), nextHard);
+      }
+    }
+
+    // feedback
+    const msg = box.querySelector('.coachnext');
+    if(msg) msg.innerHTML = `Nächste Woche (Plan): <b>${(nextWeek<=12 && isFinite(getNum(kPlan(key,nextWeek),NaN)))?getNum(kPlan(key,nextWeek),NaN)+' kg':'—'}</b> · gespeichert.`;
+
+    // re-render current view to refresh displays
+    try{ render(); }catch(e){}
+  }
+
+
 function exportProgress(){
   const data={};
   for(let i=0;i<localStorage.length;i++){
@@ -580,7 +829,7 @@ function exportProgress(){
       data[k]=localStorage.getItem(k);
     }
   }
-  const blob=new Blob([JSON.stringify({version:'v9', exportedAt:new Date().toISOString(), data}, null, 2)], {type:'application/json'});
+  const blob=new Blob([JSON.stringify({version:'v9.5-coach', exportedAt:new Date().toISOString(), data}, null, 2)], {type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
   a.download=`athletik-progress-v9-${new Date().toISOString().slice(0,10)}.json`;
@@ -662,9 +911,16 @@ $('importFile').addEventListener('change', async (e)=>{
   e.target.value='';
 });
 
-async function registerSW(){
-  if('serviceWorker' in navigator){
-    try{ await navigator.serviceWorker.register('./sw.js'); }
+
+document.addEventListener('click', (e)=>{
+  const btn = e.target && e.target.closest && e.target.closest('.coach-apply');
+  if(!btn) return;
+  const box = btn.closest('.coachbox');
+  if(!box) return;
+  applyCoach(box);
+});
+
+async function registerSW(){ /* disabled for stability */ }
     catch(e){ console.log('SW fail', e); }
   }
 }
@@ -695,7 +951,7 @@ function initUI(){
 }
 
 loadState();
-registerSW();
+/* registerSW disabled */
 initUI();
 </script>
 </body>
