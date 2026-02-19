@@ -2,957 +2,112 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#101828" />
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" href="./icons/icon-192.png" />
-  <title>Athletik System V9 (PWA)</title>
-  <style>
-    :root{
-      --bg:#F5F8FC;
-      --card:#FFFFFF;
-      --text:#0F172A;
-      --muted:#475569;
-      --line:#E5EAF2;
-      --shadow: 0 10px 30px rgba(15,23,42,.08);
-      --radius: 16px;
-      --blue:#3B82F6;
-      --orange:#F59E0B;
-      --purple:#8B5CF6;
-      --green:#22C55E;
-      --btn:#111827;
-      --btnText:#FFFFFF;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: linear-gradient(180deg, #EAF2FF 0%, var(--bg) 40%, var(--bg) 100%);
-      color:var(--text);
-    }
-    .wrap{max-width: 980px; margin: 0 auto; padding: 22px 16px 40px;}
-    header{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap}
-    h1{margin:0; font-size: 28px; letter-spacing:-.02em}
-    .meta{font-size:12px; color:var(--muted); text-align:right}
-    .topcard{
-      margin-top: 14px;
-      background: var(--card);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 14px;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr 280px;
-      gap: 10px;
-      align-items:end;
-    }
-    @media (max-width: 860px){
-      .grid{grid-template-columns: 1fr}
-      .meta{width:100%; text-align:left}
-    }
-    label{display:block; font-size:12px; color:var(--muted); margin: 0 0 6px}
-    input[type="date"], select, input[type="text"], textarea{
-      width:100%;
-      border:1px solid var(--line);
-      border-radius: 12px;
-      padding: 12px 12px;
-      font-size: 14px;
-      background:#fff;
-      color: var(--text);
-      outline: none;
-    }
-    textarea{min-height: 70px; resize: vertical}
-    .btnrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end}
-    .btn{
-      border:1px solid var(--line);
-      background:#fff;
-      padding: 11px 14px;
-      border-radius: 999px;
-      font-weight: 650;
-      font-size: 14px;
-      cursor:pointer;
-    }
-    .btn.primary{
-      border:none;
-      background: var(--btn);
-      color: var(--btnText);
-      padding: 12px 18px;
-    }
-    .btn.ghost{background:transparent}
-    .btn.warn{border-color:#f1c0c0; background:#fff5f5}
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
-      background:#F1F5FF;
-      color:#1E40AF;
-      font-size:12px;
-      font-weight:650;
-      border:1px solid #DCE7FF;
-      margin-top: 10px;
-    }
-    .notice{margin-top: 10px; font-size: 13px; color: var(--muted); line-height:1.4;}
-    .days{margin-top: 14px; display:flex; flex-direction:column; gap: 12px;}
-    .day{
-      background: var(--card);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .dayhead{
-      display:flex;
-      gap: 12px;
-      align-items:center;
-      justify-content:space-between;
-      padding: 14px;
-      cursor:pointer;
-    }
-    .dayhead .left{display:flex; align-items:center; gap: 12px; min-width:0}
-    .stripe{width: 7px; border-radius: 999px; height: 42px; flex:0 0 auto}
-    .title{min-width:0}
-    .title .t{font-size:16px; font-weight:800; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-    .title .s{font-size:12px; color:var(--muted); margin-top:2px}
-    .tags{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
-    .tag{font-size:12px; color:var(--muted); background:#F8FAFC; border:1px solid var(--line); border-radius: 999px; padding: 5px 10px; font-weight:650}
-    .tag.today{color:#0B5; border-color:#B9F6D0; background:#ECFFF4}
-    .content{border-top:1px solid var(--line); padding: 14px; display:none;}
-    .day.open .content{display:block}
-    .block{
-      border:1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 12px;
-      background:#fff;
-    }
-    .blockhead{display:flex; align-items:baseline; justify-content:space-between; gap:10px}
-    .blockhead .h{font-weight:950; font-size:16px}
-    .blockhead .r{font-size:12px; color:var(--muted); font-weight:650}
-    .descbox{
-      margin-top:10px;
-      background:#F8FAFC;
-      border:1px dashed #D9E2F1;
-      border-radius: 12px;
-      padding: 10px;
-      color: #334155;
-      font-size: 13px;
-      line-height:1.35;
-      display:none;
-    }
-    .descbox.show{display:block}
-    .small{font-size:12px; color:var(--muted); margin-top:8px}
-    .split{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
-    .divider{height:1px; background:var(--line); margin: 12px 0}
-    .footer{margin-top: 16px; font-size:12px; color:var(--muted)}
-    .install{
-      display:none;
-      margin-top:12px;
-      padding: 10px;
-      border-radius: 14px;
-      background: #ECFFF4;
-      border: 1px solid #B9F6D0;
-      color:#14532D;
-      font-size:13px;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-    }
-    .install.show{display:flex}
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas; font-size: 12px;}
-  
-    .coachbox{ margin:12px 0 6px; padding:12px; border:1px solid #e8e8e8; border-radius:14px; background:#fafafa;}
-    .coachhead{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-    .coachgrid{ display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:10px; margin-top:10px;}
-    .coachgrid label{ display:block; font-size:12px; color:var(--muted); margin-bottom:4px;}
-    .coachgrid input,.coachgrid select{ width:100%; padding:10px 10px; border-radius:12px; border:1px solid #ddd; background:white; font-size:14px;}
-    .coachplan{ margin-top:10px; padding:10px; border-radius:12px; background:white; border:1px dashed #e2e2e2;}
-    .coachnext{ margin-top:8px; }
-    .chips{ display:inline-block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; padding:6px 8px; border-radius:10px; background:#f3f3f3; }
-    .bar{ width:180px; height:10px; background:#ececec; border-radius:999px; overflow:hidden;}
-    .bar .fill{ height:100%; background:#111; width:0%; }
-    @media(max-width: 820px){
-      .coachgrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .bar{ width:100%; }
-    }
-
-</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Athletik System V12</title>
+  <link rel="stylesheet" href="./styles.css?v=12.0.0" />
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>Athletik System <span class="mono">V9</span></h1>
-        <div class="notice">Installierbare PWA (iPhone), offlinefähig. Progress lokal gespeichert.</div>
-      </div>
-      <div class="meta">
-        <div><b>Start:</b> <span id="startLabel">—</span></div>
-        <div><b>Heute:</b> <span id="todayLabel">—</span></div>
-      </div>
-    </header>
+  <div class="container">
+    <h1 id="title">Athletik System</h1>
+    <p class="sub" id="sub"></p>
 
-    <div class="topcard">
-      <div class="grid">
-        <div>
-          <label for="startDate">Startdatum (Montag)</label>
-          <input id="startDate" type="date" />
+    <div class="grid">
+      <div class="card">
+        <div class="row">
+          <div>
+            <div class="label">Startdatum (Montag)</div>
+            <input id="startInput" class="input" placeholder="TT.MM.JJJJ" disabled />
+            <div class="small">Start wird per Button gesetzt (mit Montag-Guard), damit Safari/Timezone nichts verbiegt.</div>
+          </div>
+          <div>
+            <div class="label">Woche anzeigen</div>
+            <select id="weekSelect" class="input"></select>
+          </div>
         </div>
-        <div>
-          <label for="weekSelect">Woche anzeigen</label>
-          <select id="weekSelect"></select>
+
+        <div class="row" style="margin-top:12px">
+          <div>
+            <div class="label">Ansicht</div>
+            <select id="viewSelect" class="input">
+              <option value="week">Woche (alle Tage)</option>
+              <option value="today">Heute</option>
+              <option value="day">Nur 1 Tag (Heute)</option>
+            </select>
+          </div>
+          <div>
+            <div class="label">Coaching-Modus</div>
+            <div class="coachBox">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                <div class="chip">Coaching: <span id="coachModeText">AN</span></div>
+                <label style="display:flex;gap:10px;align-items:center;color:var(--muted);font-weight:700">
+                  <input id="coachToggle" type="checkbox" /> aktiv
+                </label>
+              </div>
+              <div class="small">Coach plant Gewicht Woche→Woche konservativ (kein Ego-Lifting).</div>
+            </div>
+          </div>
         </div>
-        <div class="btnrow" style="justify-content:flex-start">
-          <button class="btn primary" id="saveStart">Speichern & Starten</button>
-          <button class="btn" id="todayBtn">Heute</button>
-          <button class="btn" id="reloadBtn">Neu laden</button>
-          <button class="btn warn" id="resetBtn">Reset</button>
+
+        <div class="actions">
+          <button class="btn primary" id="btnSetStart">Speichern & Starten</button>
+          <button class="btn" id="btnToday">Heute</button>
+          <button class="btn" id="btnReload">Neu laden</button>
+          <button class="btn danger" id="btnReset">Reset</button>
+          <button class="btn" id="btnBackfill">Letzte Einheit nachtragen</button>
         </div>
+
+        <div class="meta">
+          <div class="chip">Start: <span id="metaStart">—</span></div>
+          <div class="chip">Heute: <span id="metaToday">—</span></div>
+          <div class="chip" id="cycleChip">Cycle-Woche —</div>
+        </div>
+
+        <div class="hr"></div>
+        <div class="sectionTitle">Woche & Plan</div>
+        <div class="kicker" id="cycleNote"></div>
+        <div id="planMount"></div>
       </div>
 
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px">
-        <div style="flex:1 1 220px">
-          <label for="viewSelect">Ansicht (Mobile-Fokus)</label>
-          <select id="viewSelect">
-            <option value="week">Woche (alle Tage)</option>
-            <option value="day">Nur ein Tag (iPhone)</option>
-          </select>
+      <div class="card">
+        <div class="sectionTitle">Coach-Regeln (kompakt)</div>
+        <div class="rule" id="coachRules"></div>
+
+        <div class="hr"></div>
+        <div class="sectionTitle">Progress (Woche)</div>
+        <div class="progress">
+          <div class="pRow"><span id="progressMeta">—</span><strong id="progressPct">0%</strong></div>
+          <div class="bar"><div class="fill" id="progressFill"></div></div>
         </div>
-        <div style="flex:2 1 360px">
-          <div class="pill" id="phasePill">Cycle-Woche —</div>
-          <div class="notice" id="phaseNote">—</div>
+
+        <div class="hr"></div>
+        <div class="sectionTitle">Progress-Sicherheitsnetz</div>
+        <div class="actions">
+          <button class="btn" id="btnExport">Export (JSON)</button>
+          <label class="btn" style="display:inline-flex;align-items:center;gap:10px">
+            Import <input id="importFile" type="file" accept="application/json" style="display:none" />
+          </label>
         </div>
+        <div class="small">Tipp: Nach Woche 1/2 einmal exportieren. Kein Service Worker → kein Cache-Drama.</div>
+
+        <div class="hr"></div>
+        <div class="sectionTitle">Status</div>
+        <div class="coachBox"><div id="statusText" class="small">Bereit.</div></div>
       </div>
-
-      <div class="install" id="installBar">
-        <div><b>Installieren?</b> „Teilen“ → „Zum Home-Bildschirm“ (oder Button hier, falls verfügbar).</div>
-        <button class="btn primary" id="installBtn">Installieren</button>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="btnrow" style="justify-content:flex-start">
-        <button class="btn" id="exportBtn">Progress exportieren (JSON)</button>
-        <label class="btn ghost" style="border-style:dashed; cursor:pointer">
-          Progress importieren
-          <input id="importFile" type="file" accept="application/json" style="display:none" />
-        </label>
-        <span class="small">Export = Sicherheitsnetz. Import ergänzt/aktualisiert.</span>
-      </div>
-
-      <div class="footer" id="status">Bereit.</div>
-    </div>
-
-    <div class="days" id="days"></div>
-
-    <div class="footer">
-      <div><b>Video:</b> Links öffnen in neuem Tab. Falls „nicht verfügbar“ → Link ersetzen.</div>
-      <div style="margin-top:6px"><b>Offline:</b> Nach erster Nutzung wird alles gecached.</div>
     </div>
   </div>
 
-<script>
-const STORAGE_KEY = 'ath.v9.startDateISO';
-const UI_KEY = 'ath.v9.ui';
-const PREFIX = 'ath.v9.';
-
-const DAYS = [
-  { key:'mon', name:'Montag – Kraft A', stripe:'var(--blue)', tags:['Lower + Pull'], dur:'60–75 Min' },
-  { key:'tue', name:'Dienstag – Mobility + Handstand', stripe:'var(--orange)', tags:['Flow + Skill'], dur:'30–40 Min' },
-  { key:'wed', name:'Mittwoch – Frei / Spaziergang', stripe:'var(--green)', tags:['Recovery'], dur:'0–40 Min' },
-  { key:'thu', name:'Donnerstag – Attack', stripe:'var(--purple)', tags:['MetCon / Spaß'], dur:'45–60 Min' },
-  { key:'fri', name:'Freitag – Kraft B', stripe:'var(--blue)', tags:['Upper + Pull'], dur:'60–75 Min' },
-  { key:'sat', name:'Samstag – Rotationstag', stripe:'var(--orange)', tags:['Steph / Shapes / Barre'], dur:'moderat' },
-  { key:'sun', name:'Sonntag – Yoga oder Off', stripe:'var(--green)', tags:['Recovery'], dur:'optional' },
-];
-
-const WEEK_PHASES = [
-  { w:1, label:'Aufbau', note:'Volumen sauber aufbauen. Technik priorisieren.' },
-  { w:2, label:'Aufbau', note:'Volumen halten, 1 kleine Progression. Kein Ego.' },
-  { w:3, label:'Aufbau', note:'Letzte Aufbauwoche. Qualität > Gewicht.' },
-  { w:4, label:'Deload', note:'~80% Intensität. Technik & Erholung. Klimmzug leicht. Samstag nur Mobility, Attack moderat.' },
-  { w:5, label:'Intensivierung', note:'Wieder anziehen. Kleine Lastsprünge. RPE 7–8.' },
-  { w:6, label:'Intensivierung', note:'Kraft stabilisieren, Skill-Qualität erhöhen.' },
-  { w:7, label:'Intensivierung', note:'Stark bleiben. Keine Grind-Reps.' },
-  { w:8, label:'Deload', note:'~80%. Bewegungsqualität. Nervensystem runterfahren.' },
-  { w:9, label:'Skill-Fokus', note:'Klimmzug/Handstand: sauberer Output. Weniger Volumen, mehr Präzision.' },
-  { w:10, label:'Skill-Fokus', note:'Singles/kurze Holds. Technik = König.' },
-  { w:11, label:'Skill-Fokus', note:'Letzte harte Woche. Kein Chaos.' },
-  { w:12, label:'Deload + Test', note:'Deload + Mini-Tests (optional). Frisch bleiben.' },
-];
-
-function blk(id, title, right, type, options, def, desc, prescription, video, coachCfg){
-  return { id, title, right, type, options, def, desc, prescription, video,
-    selKey: PREFIX + 'sel.' + id,
-    progKey: PREFIX + 'prog.' + id,
-    linkKey: PREFIX + 'video.' + id
-    coachCfg: coachCfg || null
-  };
-}
-function defaultPlan(){
-  const plan = {};
-  plan.mon = [
-    blk('mon.hinge','1, { key:'deadlift', name:'Deadlift', inc:2.5, step:2.5, deloadWeeks:[4,8,12], targetDefault:140 }) Hauptlift – Hinge (4×5, RPE 7–8)','2 Reps im Tank','select',
-      ['Trap Bar Deadlift','Romanian Deadlift','Barbell Deadlift (technikstabil)'],
-      'Trap Bar Deadlift',
-      'Setup: Fußdruck, neutrale Wirbelsäule, Lat aktiv. Tempo kontrolliert runter, explosiv hoch.',
-      '4×5. Woche 1–3: +2,5–5 kg/Woche. Woche 4: Deload ~80%.',
-      'https://www.youtube.com/results?search_query=trap+bar+deadlift+coaching+form'
-    ),
-    blk('mon.uni','2, { mode:'bySelection', options:{'Bulgarian Split Squat':{key:'bulgarian',name:'Bulgarian Split Squat',inc:1,step:1,deloadWeeks:[4,8,12],targetDefault:24},'Front Squat':{key:'frontsquat',name:'Front Squat',inc:2.5,step:2.5,deloadWeeks:[4,8,12],targetDefault:100}} }) Unilateral Lower (3×6–8/Seite)','Alternative möglich','select',
-      ['Bulgarian Split Squat','Front Squat (3×5–6)','Step-Ups schwer'],
-      'Bulgarian Split Squat',
-      'ROM sauber, Knie folgt Zehen. Lieber 6 sauber als 8 krumm.',
-      '3×6–8/Seite.',
-      'https://www.youtube.com/results?search_query=bulgarian+split+squat+form+coaching'
-    ),
-    blk('mon.pull','3) Klimmzug-Block A (ca. 20 Min)','Holds + Exzentrik + Rows','list',
-      ['A) Dead Hang – 2×30–40s','B) Top Hold – 3×10–15s','C) 90° Hold – 3×10s','D) Exzentrisch – 3×4 (6s runter bis 90°)','E) Ring Rows – 3×8–10'],
-      null,
-      'Prinzip: Kontrolle statt Chaos. Schulter aktiv (Depression), Rippen unten.',
-      'A→E. Pausen 60–90s.',
-      'https://www.youtube.com/results?search_query=pull+up+scapular+activation+eccentric'
-    )
-  ];
-  plan.tue = [
-    blk('tue.mob','Mobility Block (15–20 Min)','', 'list',
-      ['90/90 Hip Flow – 2×8','Couch Stretch – 1–2 min/Seite','Thoracic Rotations – 2×8','Shoulder CARs – 2×5','Scapular Push-ups – 2×10'],
-      null,
-      'Flow ohne Eile. Atmung ruhig. Kein Dehnen ins Brennen.',
-      '15–20 Min.',
-      'https://www.youtube.com/results?search_query=shoulder+cars+thoracic+rotation+mobility'
-    ),
-    blk('tue.hs','Handstand Block (15 Min)','kein Muskelversagen', 'list',
-      ['Wall Facing Hold – 3×20–40s','Line Drill – 3×6–8','Kick-Ups – 5–10 Versuche'],
-      null,
-      'Wall-Facing: Bauch/Po an, Schulter aktiv, Blick leicht nach unten.',
-      '15 Min.',
-      'https://www.youtube.com/results?search_query=wall+facing+handstand+line+drill'
-    )
-  ];
-  plan.wed = [ blk('wed.rec','Optional: Spaziergang / Soft Mobility','20–40 Min','select',
-      ['Komplett frei','Spaziergang 20–40 Min','5 Min Hüfte/Schulter Mobility'],
-      'Spaziergang 20–40 Min',
-      'Wenn müde: komplett frei. Kein Extra-Stress.',
-      '',
-      'https://www.youtube.com/results?search_query=easy+hip+shoulder+mobility+5+minutes'
-  )];
-  plan.thu = [ blk('thu.attack','LES MILLS – BODYATTACK','', 'select',
-      ['Attack (voll)','Attack (moderat)','Alternative: Cardio 30–45 Min'],
-      'Attack (voll)',
-      'Cooldown: 5–10 Min Mobility.',
-      '45–60 Min.',
-      'https://www.youtube.com/results?search_query=post+workout+cooldown+mobility'
-  )];
-  plan.fri = [
-    blk('fri.push','1, { key:'bench', name:'Bankdrücken', inc:2.5, step:2.5, deloadWeeks:[4,8,12], targetDefault:100 }) Hauptlift – Push (4×6–8)','', 'select',
-      ['Bankdrücken','DB Press','Ring Push-ups (schwer)'],
-      'Bankdrücken',
-      'Schulterblätter hinten/unten. Kein Bouncen.',
-      '4×6–8.',
-      'https://www.youtube.com/results?search_query=bench+press+form+coaching'
-    ),
-    blk('fri.pull','2) Klimmzug-Block B','Progress: Band dünner oder 1 Rep mehr','select',
-      ['Band-Assist Pull-ups (4×3–5)','Exzentrisch komplett (2×3, 6–8s)','Dead Hang (2×30s)'],
-      'Band-Assist Pull-ups (4×3–5)',
-      'Fokus: saubere Schulter + Körperspannung.',
-      'Band → Exzentrik → Hang',
-      'https://www.youtube.com/results?search_query=band+assisted+pull+up+eccentric'
-    )
-  ];
-  plan.sat = [ blk('sat.rot','Rotationstag (moderat)','', 'select',
-      ['Steph Flow','LM Shapes','LM Barre','Mobility only (Deload-Woche)'],
-      'Steph Flow',
-      'Nicht alles jede Woche. Intensität moderat.',
-      '',
-      'https://www.youtube.com/results?search_query=full+body+mobility+flow+20+minutes'
-  )];
-  plan.sun = [ blk('sun.yoga','Yoga oder Off','', 'select',
-      ['Flow Yoga','Yin Yoga','Komplett Off'],
-      'Flow Yoga',
-      'Off ist eine Trainingsentscheidung.',
-      '',
-      'https://www.youtube.com/results?search_query=yin+yoga+full+body+45+minutes'
-  )];
-  return plan;
-}
-
-const $ = (id)=>document.getElementById(id);
-
-function isoToLocalDateInput(iso){
-  const d = new Date(iso);
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,'0');
-  const da = String(d.getDate()).padStart(2,'0');
-  return `${y}-${m}-${da}`;
-}
-function mondayOf(date){
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = (day===0 ? -6 : 1-day);
-  d.setDate(d.getDate()+diff);
-  d.setHours(0,0,0,0);
-  return d;
-}
-function addDays(date, n){ const d = new Date(date); d.setDate(d.getDate()+n); return d; }
-function fmtDE(date){ return new Intl.DateTimeFormat('de-DE').format(new Date(date)); }
-function clamp(n,a,b){ return Math.max(a, Math.min(b, n)); }
-function setStatus(msg){ $('status').textContent = msg; }
-
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; $('installBar').classList.add('show'); });
-$('installBtn').addEventListener('click', async ()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; $('installBar').classList.remove('show'); });
-
-const PLAN = defaultPlan();
-let state = { startISO:null, week:1, view:'week', dayFocus:'mon' };
-
-function loadState(){
-  const startISO = localStorage.getItem(STORAGE_KEY);
-  const ui = localStorage.getItem(UI_KEY);
-  if(startISO) state.startISO = startISO;
-  if(ui){ try{ const o=JSON.parse(ui); state.week=o.week||state.week; state.view=o.view||state.view; state.dayFocus=o.dayFocus||state.dayFocus; }catch{} }
-}
-function saveUI(){ localStorage.setItem(UI_KEY, JSON.stringify({week: state.week, view: state.view, dayFocus: state.dayFocus})); }
-
-function cycleWeekFor(date){
-  if(!state.startISO) return 1;
-  const start = new Date(state.startISO);
-  const diffMs = date - start;
-  const diffDays = Math.floor(diffMs / (1000*60*60*24));
-  const w = Math.floor(diffDays / 7) + 1;
-  return clamp(w, 1, 12);
-}
-function dayKeyFor(date){
-  const dow = new Date(date).getDay();
-  return ['sun','mon','tue','wed','thu','fri','sat'][dow];
-}
-
-function buildWeekSelect(){
-  $('weekSelect').innerHTML='';
-  WEEK_PHASES.forEach(p=>{
-    const opt=document.createElement('option');
-    opt.value=String(p.w);
-    opt.textContent=`Woche ${p.w} (${p.label})`;
-    $('weekSelect').appendChild(opt);
-  });
-}
-function updatePhaseLabel(){
-  const p = WEEK_PHASES.find(x=>x.w===state.week) || WEEK_PHASES[0];
-  $('phasePill').textContent = `Cycle-Woche ${state.week}/12 · ${p.label}`;
-  $('phaseNote').textContent = p.note;
-}
-
-function escapeHtml(str){
-  return (str||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
-}
-function escapeAttr(str){ return escapeHtml(str).replaceAll('"','&quot;'); }
-
-function renderDayBlocks(dayKey){
-  const wrap=document.createElement('div');
-  const blocks=PLAN[dayKey]||[];
-  blocks.forEach(b=>{
-    const card=document.createElement('div');
-    card.className='block';
-    const savedSel = localStorage.getItem(b.selKey) || b.def || (b.options ? b.options[0] : '');
-    const savedProg = localStorage.getItem(b.progKey) || '';
-    const savedLink = localStorage.getItem(b.linkKey) || b.video || '';
-
-    card.innerHTML = `
-      <div class="blockhead">
-        <div class="h">${escapeHtml(b.title)}</div>
-        <div class="r">${escapeHtml(b.right||'')}</div>
+  <div id="modal">
+    <div class="card" style="max-width:720px;margin:0 16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div class="sectionTitle" style="margin:0">Letzte Einheit nachtragen</div>
+        <button class="btn" id="modalClose">Schließen</button>
       </div>
-      <div class="small">${escapeHtml(b.prescription||'')}</div>
-      <div class="split">
-        <button class="btn" data-action="toggleDesc">Beschreibung</button>
-      </div>
-      <div class="descbox" data-desc>${escapeHtml(b.desc||'').replaceAll('\\n','<br>')}</div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
 
-      ${b.type==='select' ? `
-        <div style="margin-top:10px">
-          <label>Auswahl</label>
-          <select data-sel>
-            ${b.options.map(o=>`<option ${o===savedSel?'selected':''}>${escapeHtml(o)}</option>`).join('')}
-          </select>
-          <div class="btnrow" style="justify-content:flex-start; margin-top:8px">
-            <button class="btn" data-action="saveSel">Auswahl speichern</button>
-          </div>
-        </div>
-      ` : `
-        <div style="margin-top:10px">
-          <label>Inhalt (Checkliste)</label>
-          <div class="descbox show" style="border-style:solid">
-            ${b.options.map(o=>`• ${escapeHtml(o)}`).join('<br>')}
-          </div>
-        </div>
-      `}
+  <div id="toast" class="toast">Bereit</div>
 
-      <div style="margin-top:10px">
-        <label>Progress / Notiz</label>
-        <textarea data-prog placeholder="z.B. 120 kg ×5 @RPE8 / Band: grün 4×4 / fühlt sich an: ...">${escapeHtml(savedProg)}</textarea>
-        <div class="btnrow" style="justify-content:flex-start; margin-top:8px">
-          <button class="btn primary" data-action="saveProg">Progress speichern</button>
-        </div>
-      </div>
-
-      <div style="margin-top:10px">
-        <label>Video-Link (editierbar)</label>
-        <input type="text" data-link value="${escapeAttr(savedLink)}" />
-        <div class="btnrow" style="justify-content:flex-start; margin-top:8px">
-          <button class="btn" data-action="saveLink">Link speichern</button>
-          <button class="btn" data-action="openVideo">Video ansehen</button>
-        </div>
-      </div>
-    `;
-
-    card.querySelector('[data-action="toggleDesc"]').addEventListener('click', ()=>{
-      card.querySelector('[data-desc]').classList.toggle('show');
-    });
-    const sel = card.querySelector('[data-sel]');
-    if(sel){
-      card.querySelector('[data-action="saveSel"]').addEventListener('click', ()=>{
-        localStorage.setItem(b.selKey, sel.value);
-        setStatus('Auswahl gespeichert.');
-      });
-    }
-    const prog = card.querySelector('[data-prog]');
-    card.querySelector('[data-action="saveProg"]').addEventListener('click', ()=>{
-      localStorage.setItem(b.progKey, prog.value);
-      setStatus('Progress gespeichert.');
-    });
-    const link = card.querySelector('[data-link]');
-    card.querySelector('[data-action="saveLink"]').addEventListener('click', ()=>{
-      localStorage.setItem(b.linkKey, link.value.trim());
-      setStatus('Link gespeichert.');
-    });
-    card.querySelector('[data-action="openVideo"]').addEventListener('click', ()=>{
-      const url=(link.value||'').trim();
-      if(!url){ alert('Kein Link gesetzt.'); return; }
-      window.open(url, '_blank', 'noopener,noreferrer');
-    });
-
-    wrap.appendChild(card);
-  });
-  return wrap;
-}
-
-function renderDays(){
-  const daysEl=$('days');
-  daysEl.innerHTML='';
-  let visibleDays=DAYS;
-  if(state.view==='day') visibleDays=DAYS.filter(d=>d.key===state.dayFocus);
-
-  const today=new Date();
-  const todayKey=dayKeyFor(today);
-  const todayWeek=cycleWeekFor(today);
-
-  visibleDays.forEach(d=>{
-    const day=document.createElement('div');
-    day.className='day';
-    day.dataset.key=d.key;
-
-    const isToday = (d.key===todayKey && state.week===todayWeek);
-    const head=document.createElement('div');
-    head.className='dayhead';
-    head.innerHTML=`
-      <div class="left">
-        <div class="stripe" style="background:${d.stripe}"></div>
-        <div class="title">
-          <div class="t">${d.name}</div>
-          <div class="s">Dauer: ${d.dur}</div>
-        </div>
-      </div>
-      <div class="tags">
-        ${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}
-        ${isToday?`<span class="tag today">Heute</span>`:''}
-        <span class="tag">›</span>
-      </div>
-    `;
-    head.addEventListener('click', ()=>{
-      const open=day.classList.contains('open');
-      document.querySelectorAll('.day').forEach(x=>x.classList.remove('open'));
-      if(!open) day.classList.add('open');
-      if(state.view==='day') day.classList.add('open');
-    });
-
-    const content=document.createElement('div');
-    content.className='content';
-    content.appendChild(renderDayBlocks(d.key));
-
-    day.appendChild(head);
-    day.appendChild(content);
-
-    if(state.view==='day') day.classList.add('open');
-    daysEl.appendChild(day);
-  });
-}
-
-
-  // ---- Coach (robust, simple) ----
-  const COACH_PREFIX = PREFIX + 'coach.';
-  function slug(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
-  function isDeload(week, deloadWeeks){ return (deloadWeeks||[]).includes(week); }
-  function roundToStep(x, step){
-    const s = Number(step||0.5);
-    if(!isFinite(s) || s<=0) return Math.round(x*2)/2;
-    return Math.round(x/s)*s;
-  }
-  function coachKeyFor(blockId, cfg, selectedOption){
-    if(!cfg) return null;
-    if(cfg.mode === 'bySelection' && cfg.options){
-      const optCfg = cfg.options[selectedOption];
-      if(!optCfg) return null;
-      return blockId + '::' + optCfg.key;
-    }
-    return blockId + '::' + cfg.key;
-  }
-  function coachCfgFor(cfg, selectedOption){
-    if(!cfg) return null;
-    if(cfg.mode === 'bySelection' && cfg.options) return cfg.options[selectedOption] || null;
-    return cfg;
-  }
-  function kStart(key){ return COACH_PREFIX + key + '.start'; }
-  function kTarget(key){ return COACH_PREFIX + key + '.target'; }
-  function kPlan(key,w){ return COACH_PREFIX + key + '.plan.w' + w; }
-  function kHard(key,w){ return COACH_PREFIX + key + '.hard.w' + w; }
-  function kLog(key,w){ return COACH_PREFIX + key + '.log.w' + w; }
-
-  function getNum(k, fallback){
-    const v = localStorage.getItem(k);
-    const n = v==null ? NaN : Number(v);
-    return isFinite(n) ? n : fallback;
-  }
-  function setNum(k, n){ localStorage.setItem(k, String(n)); }
-
-  function getHardForWeek(key, week){
-    for(let w=week; w>=1; w--){
-      const v = getNum(kHard(key,w), NaN);
-      if(isFinite(v)) return v;
-      const pv = getNum(kPlan(key,w), NaN);
-      if(isFinite(pv) && !isDeload(w, [4,8,12])) return pv;
-    }
-    return NaN;
-  }
-
-  function computePlannedBase(key, cfg, week){
-    const existing = getNum(kPlan(key,week), NaN);
-    if(isFinite(existing)) return existing;
-
-    const start = getNum(kStart(key), NaN);
-    if(!isFinite(start)) return NaN;
-
-    if(isDeload(week, cfg.deloadWeeks)){
-      const hardPrev = getHardForWeek(key, week-1);
-      if(isFinite(hardPrev)) return roundToStep(hardPrev * 0.85, cfg.step);
-      return roundToStep(start * 0.85, cfg.step);
-    }
-
-    const hardPrev = getHardForWeek(key, week-1);
-    if(isFinite(hardPrev)) return roundToStep(hardPrev + cfg.inc, cfg.step);
-
-    return roundToStep(start + (week-1)*cfg.inc, cfg.step);
-  }
-
-  function warmupChips(weight, step){
-    if(!isFinite(weight) || weight<=0) return '';
-    const rounds = (x)=>roundToStep(x, step);
-    const seq = [
-      [0.40,5],
-      [0.60,5],
-      [0.70,3],
-      [0.80,2],
-      [0.90,1]
-    ].map(([p,r])=>`${rounds(weight*p)}×${r}`).join('  ');
-    return `<span class="chips">${seq}  →  <b>${rounds(weight)}×1</b></span>`;
-  }
-
-  function renderCoach(block, selectedOption, week){
-    const cfg = coachCfgFor(block.coachCfg, selectedOption);
-    if(!cfg) return '';
-    const key = coachKeyFor(block.id, block.coachCfg, selectedOption);
-    if(!key) return '';
-    const start = getNum(kStart(key), NaN);
-    const target = getNum(kTarget(key), cfg.targetDefault || NaN);
-    const planned = computePlannedBase(key, cfg, week);
-    const deloadNote = isDeload(week, cfg.deloadWeeks) ? ' (Deload −15%)' : '';
-    const nextWeek = week+1;
-    const nextPlanned = nextWeek<=12 ? computePlannedBase(key, cfg, nextWeek) : NaN;
-
-    const logRaw = localStorage.getItem(kLog(key, week));
-    let log = {};
-    try{ log = logRaw ? JSON.parse(logRaw) : {}; }catch(e){ log={}; }
-
-    const prog = (isFinite(target) && isFinite(planned)) ? Math.max(0, Math.min(1, planned/target)) : null;
-
-    return `
-      <div class="coachbox" 
-        data-coachkey="${key}" 
-        data-week="${week}"
-        data-inc="${cfg.inc}"
-        data-step="${cfg.step}"
-        data-deload="${(cfg.deloadWeeks||[]).join(',')}"
-      >
-        <div class="coachhead">
-          <div><b>Coach: ${cfg.name}</b> · Woche ${week}${deloadNote}</div>
-          ${prog!==null ? `<div class="bar"><div class="fill" style="width:${Math.round(prog*100)}%"></div></div>` : ''}
-        </div>
-
-        <div class="coachgrid">
-          <div>
-            <label>Startgewicht (einmal)</label>
-            <input class="coach-start" type="number" inputmode="decimal" value="${isFinite(start)?start:''}" placeholder="z.B. ${isFinite(planned)?planned:''}">
-          </div>
-          <div>
-            <label>Ziel (optional)</label>
-            <input class="coach-target" type="number" inputmode="decimal" value="${isFinite(target)?target:''}" placeholder="">
-          </div>
-        </div>
-
-        <div class="coachplan">
-          <div><span class="muted">Plan:</span> <b>${isFinite(planned)?planned+' kg':'—'}</b>${deloadNote}</div>
-          <div class="muted">${warmupChips(planned, cfg.step)}</div>
-        </div>
-
-        <div class="coachgrid">
-          <div>
-            <label>Log: Gewicht</label>
-            <input class="coach-w" type="number" inputmode="decimal" value="${log.w ?? ''}" placeholder="kg">
-          </div>
-          <div>
-            <label>Reps (Top-Set)</label>
-            <input class="coach-reps" type="number" inputmode="numeric" value="${log.reps ?? ''}" placeholder="z.B. 6">
-          </div>
-          <div>
-            <label>RPE</label>
-            <select class="coach-rpe">
-              ${[6,6.5,7,7.5,8,8.5,9,9.5,10].map(v=>`<option value="${v}" ${String(log.rpe)==String(v)?'selected':''}>${v}</option>`).join('')}
-            </select>
-          </div>
-          <div>
-            <label>Technik</label>
-            <select class="coach-tech">
-              ${['ok','wacklig'].map(v=>`<option value="${v}" ${String(log.tech||'ok')==v?'selected':''}>${v==='ok'?'OK (sauber)':'wacklig'}</option>`).join('')}
-            </select>
-          </div>
-        </div>
-
-        <button class="btn coach-apply">Log speichern + Coach anwenden</button>
-
-        <div class="coachnext muted">Nächste Woche (Plan): <b>${isFinite(nextPlanned)?nextPlanned+' kg':'—'}</b></div>
-      </div>
-    `;
-  }
-
-  function parseDeloadAttr(s){
-    if(!s) return [];
-    return String(s).split(',').map(x=>Number(x)).filter(n=>isFinite(n));
-  }
-
-  function applyCoach(box){
-    const key = box.dataset.coachkey;
-    const week = Number(box.dataset.week);
-    const inc = Number(box.dataset.inc);
-    const step = Number(box.dataset.step);
-    const deloadWeeks = parseDeloadAttr(box.dataset.deload);
-
-    const startInput = box.querySelector('.coach-start');
-    const targetInput = box.querySelector('.coach-target');
-    const wInput = box.querySelector('.coach-w');
-    const repsInput = box.querySelector('.coach-reps');
-    const rpeSel = box.querySelector('.coach-rpe');
-    const techSel = box.querySelector('.coach-tech');
-
-    const start = Number(startInput.value);
-    if(isFinite(start) && start>0) setNum(kStart(key), roundToStep(start, step));
-
-    const target = Number(targetInput.value);
-    if(isFinite(target) && target>0) setNum(kTarget(key), roundToStep(target, step));
-
-    const plannedThis = computePlannedBase(key, {inc,step,deloadWeeks}, week);
-    const hardThis = isDeload(week, deloadWeeks) ? getHardForWeek(key, week) : plannedThis;
-
-    const log = {
-      w: Number(wInput.value),
-      reps: Number(repsInput.value),
-      rpe: Number(rpeSel.value),
-      tech: String(techSel.value||'ok'),
-      ts: Date.now()
-    };
-    localStorage.setItem(kLog(key, week), JSON.stringify(log));
-
-    // delta rule (conservative):
-    let delta = 0;
-    if(log.tech !== 'ok' || log.rpe >= 9) delta = -inc/2;
-    else if(log.rpe >= 8.5) delta = 0;
-    else if(log.rpe >= 8) delta = inc/2;
-    else delta = inc;
-
-    // never below start
-    const startStored = getNum(kStart(key), NaN);
-    const baseHard = isFinite(hardThis) ? hardThis : startStored;
-    const nextHard = roundToStep(Math.max(startStored || 0, baseHard + delta), step);
-
-    const nextWeek = week + 1;
-
-    if(nextWeek <= 12){
-      if(isDeload(nextWeek, deloadWeeks)){
-        // set deload plan and remember hard anchor
-        setNum(kPlan(key, nextWeek), roundToStep(baseHard * 0.85, step));
-        setNum(kHard(key, nextWeek), baseHard);
-        // pre-seed week after deload
-        if(nextWeek+1 <= 12){
-          setNum(kPlan(key, nextWeek+1), nextHard);
-          setNum(kHard(key, nextWeek+1), nextHard);
-        }
-      } else {
-        setNum(kPlan(key, nextWeek), nextHard);
-        setNum(kHard(key, nextWeek), nextHard);
-      }
-    }
-
-    // feedback
-    const msg = box.querySelector('.coachnext');
-    if(msg) msg.innerHTML = `Nächste Woche (Plan): <b>${(nextWeek<=12 && isFinite(getNum(kPlan(key,nextWeek),NaN)))?getNum(kPlan(key,nextWeek),NaN)+' kg':'—'}</b> · gespeichert.`;
-
-    // re-render current view to refresh displays
-    try{ render(); }catch(e){}
-  }
-
-
-function exportProgress(){
-  const data={};
-  for(let i=0;i<localStorage.length;i++){
-    const k=localStorage.key(i);
-    if(k && (k.startsWith(PREFIX) || k===STORAGE_KEY || k===UI_KEY)){
-      data[k]=localStorage.getItem(k);
-    }
-  }
-  const blob=new Blob([JSON.stringify({version:'v9.5-coach', exportedAt:new Date().toISOString(), data}, null, 2)], {type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`athletik-progress-v9-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-  setStatus('Export erstellt.');
-}
-async function importProgress(file){
-  const txt=await file.text();
-  let obj;
-  try{ obj=JSON.parse(txt); }catch{ alert('JSON konnte nicht gelesen werden.'); return; }
-  const data=obj.data||obj;
-  let count=0;
-  for(const [k,v] of Object.entries(data)){
-    if(typeof v!=='string') continue;
-    if(k.startsWith(PREFIX) || k===STORAGE_KEY || k===UI_KEY){
-      localStorage.setItem(k, v);
-      count++;
-    }
-  }
-  setStatus(`Import abgeschlossen (${count} Einträge).`);
-  initUI();
-}
-
-$('saveStart').addEventListener('click', ()=>{
-  const val=$('startDate').value;
-  if(!val){ alert('Bitte Startdatum setzen (Montag).'); return; }
-  const d=mondayOf(new Date(val));
-  const iso=d.toISOString();
-  state.startISO=iso;
-  localStorage.setItem(STORAGE_KEY, iso);
-  setStatus('System aktiviert.');
-  initUI();
-});
-$('reloadBtn').addEventListener('click', ()=>{ initUI(); setStatus('Neu geladen.'); });
-$('resetBtn').addEventListener('click', ()=>{
-  if(!confirm('Reset löscht Startdatum & alle gespeicherten Daten. Wirklich?')) return;
-  const toDel=[];
-  for(let i=0;i<localStorage.length;i++){
-    const k=localStorage.key(i);
-    if(k && (k.startsWith(PREFIX) || k===STORAGE_KEY || k===UI_KEY)) toDel.push(k);
-  }
-  toDel.forEach(k=>localStorage.removeItem(k));
-  state={startISO:null, week:1, view:'week', dayFocus:'mon'};
-  setStatus('Reset abgeschlossen.');
-  initUI();
-});
-$('weekSelect').addEventListener('change', ()=>{
-  state.week=Number($('weekSelect').value);
-  saveUI();
-  updatePhaseLabel();
-  renderDays();
-});
-$('viewSelect').addEventListener('change', ()=>{
-  state.view=$('viewSelect').value;
-  if(state.view==='day' && !state.dayFocus) state.dayFocus='mon';
-  saveUI();
-  renderDays();
-  setTimeout(()=>document.querySelector('.day')?.classList.add('open'), 0);
-});
-$('todayBtn').addEventListener('click', ()=>{
-  if(!state.startISO){ alert('Bitte zuerst Startdatum setzen und speichern.'); return; }
-  const today=new Date();
-  state.week=cycleWeekFor(today);
-  state.dayFocus=dayKeyFor(today);
-  state.view='day';
-  saveUI();
-  $('weekSelect').value=String(state.week);
-  $('viewSelect').value=state.view;
-  updatePhaseLabel();
-  renderDays();
-  setStatus('Heute fokussiert.');
-});
-$('exportBtn').addEventListener('click', exportProgress);
-$('importFile').addEventListener('change', async (e)=>{
-  const f=e.target.files && e.target.files[0];
-  if(!f) return;
-  await importProgress(f);
-  e.target.value='';
-});
-
-
-document.addEventListener('click', (e)=>{
-  const btn = e.target && e.target.closest && e.target.closest('.coach-apply');
-  if(!btn) return;
-  const box = btn.closest('.coachbox');
-  if(!box) return;
-  applyCoach(box);
-});
-
-async function registerSW(){ /* disabled for stability */ }
-    catch(e){ console.log('SW fail', e); }
-  }
-}
-
-function initUI(){
-  const today=new Date();
-  $('todayLabel').textContent=fmtDE(today);
-
-  buildWeekSelect();
-
-  if(!state.startISO){
-    const d=mondayOf(addDays(today, 7));
-    $('startDate').value=isoToLocalDateInput(d.toISOString());
-    $('startLabel').textContent='—';
-    state.week=1;
-  }else{
-    $('startLabel').textContent=fmtDE(new Date(state.startISO));
-    $('startDate').value=isoToLocalDateInput(state.startISO);
-    state.week=clamp(state.week || cycleWeekFor(today), 1, 12);
-  }
-
-  $('weekSelect').value=String(state.week);
-  $('viewSelect').value=state.view;
-
-  updatePhaseLabel();
-  renderDays();
-  if(state.view==='day') setTimeout(()=>document.querySelector('.day')?.classList.add('open'), 0);
-}
-
-loadState();
-/* registerSW disabled */
-initUI();
-</script>
+  <script type="module" src="./app.js?v=12.0.0"></script>
 </body>
 </html>
